@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">MovieNight</string>
+    <string name="error_title">Oops! Sorry</string>
+    <string name="error_message">There was an error. Please try again</string>
+    <string name="error_ok_button">OK</string>
+    <string name="network_unavailable_message">Sorry, the network is unavailable</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="ok_label">OK</string>
+    <string name="dismiss_label">Dismiss</string>
+    <string name="clear_all_label">Clear all</string>
+
+
+    <string-array name="movie_genres">
+        <item>Action</item>
+        <item>Adventure</item>
+        <item>Animation</item>
+        <item>Comedy</item>
+        <item>Crime</item>
+        <item>Documentary</item>
+        <item>Drama</item>
+        <item>Family</item>
+        <item>Fantasy</item>
+        <item>History</item>
+        <item>Horror</item>
+        <item>Music</item>
+        <item>Mystery</item>
+        <item>Romance</item>
+        <item>Science Fiction</item>
+        <item>TV Movie</item>
+        <item>Thriller</item>
+        <item>War</item>
+        <item>Western</item>
+    </string-array>
+
+    <string-array name="tv_show_genres">
+        <item>Action and Adventure</item>
+        <item>Animation</item>
+        <item>Comedy</item>
+        <item>Crime</item>
+        <item>Documentary</item>
+        <item>Drama</item>
+        <item>Family</item>
+        <item>Kids</item>
+        <item>News</item>
+        <item>Reality</item>
+        <item>Sci-Fi and Fantasy</item>
+        <item>Soap</item>
+        <item>Talk</item>
+        <item>War and Politics</item>
+        <item>Western</item>
+    </string-array>
+
+    <string-array name="min_num_rating">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+        <item>80</item>
+        <item>90</item>
+        <item>100</item>
+        <item>110</item>
+        <item>120</item>
+        <item>130</item>
+        <item>140</item>
+        <item>150</item>
+        <item>200</item>
+        <item>250</item>
+        <item>300</item>
+        <item>500</item>
+        <item>1000</item>
+        <item>2000</item>
+        <item>3000</item>
+        <item>5000</item>
+    </string-array>
+</resources>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/tmdb_icon"
+        android:title="tmdb"
+        android:icon="@drawable/tmdb1"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/genre_test"
+        android:title="Genre selection"/>
+
+    <item
+        android:id="@+id/vote_average"
+        android:title="Rating"/>
+
+    <item
+        android:id="@+id/min_num_rating"
+        android:title="Minimum number of votes"/>
+
+    <item
+        android:id="@+id/release_range"
+        android:title="Release date range"/>
+
+    <item
+        android:id="@+id/clear_everything"
+        android:title="Clear choices"
+        android:icon="@drawable/baseline_clear_all_black_48"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/sort"
+        android:title="Sort"
+        app:showAsAction="always"
+        android:icon="@drawable/baseline_filter_list_black_48"
+        />
+
+
+</menu>

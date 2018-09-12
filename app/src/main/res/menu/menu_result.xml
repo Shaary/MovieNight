@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/movies"
+        android:title="MOVIES"
+        android:icon="@mipmap/baseline_local_movies_black_48"/>
+
+    <item
+        android:id="@+id/tv"
+        android:title="TV SHOWS"
+        android:icon="@mipmap/baseline_tv_black_48"/>
+
+    <item
+        android:id="@+id/movie_and_tv"
+        android:title="MOVIES AND TV SHOWS"
+        />
+
+
+
+
+
+
+
+
+
+
+</menu>
