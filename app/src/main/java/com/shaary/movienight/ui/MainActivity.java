@@ -1,5 +1,6 @@
 package com.shaary.movienight.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -8,6 +9,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,16 +20,15 @@ import android.widget.Toast;
 import com.shaary.movienight.R;
 import com.shaary.movienight.helpers.ApiInterface;
 import com.shaary.movienight.helpers.RVAdapter;
+import com.shaary.movienight.helpers.RecyclerViewAdapter;
 import com.shaary.movienight.model.DataResults;
 import com.shaary.movienight.model.children.Result;
-import com.shaary.movienight.model.children.TvShowResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.ButterKnife;
-import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private android.support.v7.widget.Toolbar toolbar;
 
+    //Requst constants
     public static final String API_KEY = "f2388368dc53b8b5a5a298ec53148eed";
     public static final String BASE_URL = "https://api.themoviedb.org";
     public static final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p/";
@@ -48,32 +49,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String IMAGE_SIZE = "w185";
     public static String append = "tv";
 
-    private static final int NUM_COLUMNS = 2;
-
-    private List<Result> listOfData = new ArrayList<>();
-    private List<Result> listOfMovies = new ArrayList<>();
-    private List<TvShowResult> listOfTvShows = new ArrayList<>();
-    private List<Result> newListOfData = new ArrayList<>();
-    public static String movieImageUrl;
-
-
+    //Request vars
     public static int voteCount = 0;
     public static float voteAverage = 0;
     public static int year = 0;
-    public static boolean isMovie = true;
-    public static boolean isTV = true;
     public static String genreId = null;
     public static String releaseDateBegin = null;
     public static String releaseDateEnd = null;
     public static String SORT_BY = "popularity.desc";
 
+    //Flags
+    public static boolean isMovie = true;
+    public static boolean isTV = false;
+
+    //Answer holders
+    private List<Result> listOfData = new ArrayList<>();
+    private List<Result> newListOfData = new ArrayList<>();
+
     //layout vars
     private GridLayoutManager gridLayoutManager;
-    RecyclerView recyclerView;
-    private ProgressBar progressBar;
+    private static final int NUM_COLUMNS = 2;
+    private RecyclerView recyclerView;
     private RVAdapter adapter;
+    private RecyclerViewAdapter recyclerViewAdapter;
+    private ProgressBar progressBar;
+    private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
+    public static String movieImageUrl;
 
     //Variables for pageination
     private boolean isLoading = true;
@@ -90,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
+
+        //TODO: use butterknife
 
         drawerLayout = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -114,6 +119,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         scroll();
     }
 
+    //TODO: fix recycler view error
+    //TODO: figure out why first log doesn't scroll
+    //TODO: figure out why list of TV shows is screwed
     private void scroll() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -134,10 +142,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     if (!isLoading && (totalItemCount - visibleItemCount) <= (pastVisibleItems + viewThreshold)) {
                         PAGE++;
-                        performPagination();
-                        adapter.addResults(newListOfData);
                         setView(newListOfData);
+                        listOfData.addAll(newListOfData);
+                        recyclerViewAdapter.addResults(getListOfPosters(newListOfData), getListOfTitles(newListOfData));
+                        performPagination();
                         isLoading = true;
+                        Log.d(TAG, "onScrolled: isMovie " + isMovie);
+                        Log.d(TAG, "onScrolled: isTv " + isTV);
                     }
                 }
             }
@@ -148,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         progressBar.setVisibility(View.VISIBLE);
 
-        Call<DataResults> call = getDataResultsCall();
+        Call<DataResults> call = getCall();
 
         call.enqueue(new Callback<DataResults>() {
             @Override
@@ -179,7 +190,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private Call<DataResults> getDataResultsCall() {
+
+    private Call<DataResults> getCall() {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -194,10 +206,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             call = myInterface.getListOfMovies(API_KEY, LANGUAGE, SORT_BY, PAGE,
                     voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
 
-            Log.d(TAG, "getDataResultsCall: append" + append);
-        } else if (isTV) {
-            call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, SORT_BY, PAGE,
-                    voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
+            Log.d(TAG, "getCall: append" + append);
         } else {
             call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, SORT_BY, PAGE,
                     voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
@@ -205,28 +214,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return call;
     }
 
-    private void getBothResults() {
-
-    }
-
     protected void performPagination() {
 
         progressBar.setVisibility(View.VISIBLE);
 
-        Call<DataResults> call = getDataResultsCall();
+        Call<DataResults> call = getCall();
 
         call.enqueue(new Callback<DataResults>() {
             @Override
             public void onResponse(Call<DataResults> call, Response<DataResults> response) {
                 if (response.isSuccessful()) {
-                    if (isMovie && isTV) {
-                        getBothResults();
-                        newListOfData = listOfData;
-                    } else {
                         DataResults results = response.body();
                         newListOfData = results.getResults();
                         Log.d(TAG, "onResponse: pageination page " + PAGE);
-                    }
                     progressBar.setVisibility(View.GONE);
 
                 } else {
@@ -261,11 +261,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private List<String> getListOfTitles(List<Result> listOfData) {
+        ArrayList<String> titles = new ArrayList<>();
+        for (Result result : listOfData) {
+            if (isMovie) {
+                titles.add(result.getTitle());
+            }
+            if (isTV) {
+                titles.add(result.getName());
+            }
+        }
+        return titles;
+    }
+
+        private List<String> getListOfPosters(List<Result> listOfData) {
+            ArrayList<String> posters = new ArrayList<>();
+            for (Result result : listOfData) {
+                posters.add(result.getPoster_path());
+            }
+            return posters;
+
+        }
+
     private void initRecyclerView(List<Result> listOfData) {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
+
+        recyclerViewAdapter = new RecyclerViewAdapter(this, getListOfPosters(listOfData), getListOfTitles(listOfData));
         //recyclerView = findViewById(R.id.recycler_view);
-        adapter = new RVAdapter(this, listOfData, isMovie, isTV);
-        recyclerView.setAdapter(adapter);
+        //adapter = new RVAdapter(this, listOfData, isMovie, isTV);
+        recyclerView.setAdapter(recyclerViewAdapter);
+
+        recyclerViewAdapter.setListener(new RecyclerViewAdapter.Listener() {
+            @Override
+            public void onClick(int position) {
+                ChoiceDialogFragment choiceDialogFragment = new ChoiceDialogFragment();
+                Bundle extras = new Bundle();
+                extras.putString("overview", listOfData.get(position).getOverview());
+                extras.putFloat("rating", (float)listOfData.get(position).getVote_average());
+                extras.putInt("vote count", listOfData.get(position).getVote_count());
+
+                if (isMovie) {
+                    extras.putString("title", listOfData.get(position).getTitle());
+                    extras.putString("date", listOfData.get(position).getRelease_date());
+                    extras.putString("type", "movie");
+
+                    //Log.d(TAG, "onClick: clicked on:  " + mResults.get(holder.getAdapterPosition()).getTitle());
+                } else {
+                    extras.putString("title", listOfData.get(position).getName());
+                    extras.putString("date", listOfData.get(position).getFirst_air_date());
+                    extras.putString("type", "tv show");
+                    //Log.d(TAG, "onClick: clicked on:  " + mResults.get(holder.getAdapterPosition()).getTitle());
+                }
+                choiceDialogFragment.setArguments(extras);
+                choiceDialogFragment.show(getSupportFragmentManager(), "choice");
+            }
+        });
     }
 
 
@@ -344,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             voteAverage = 0;
             year = 0;
             isMovie = true;
-            isTV = true;
+            isTV = false;
             genreId = null;
             releaseDateBegin = null;
             releaseDateEnd = null;
@@ -379,13 +429,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(this, "tv shows are selected", Toast.LENGTH_SHORT).show();
                 return true;
 
-            case R.id.movie_and_tv:
-                isMovie = true;
-                isTV = true;
-                resetPage();
-                getBothResults();
-                Toast.makeText(this, "movies and tv shows are selected", Toast.LENGTH_SHORT).show();
-                return true;
+//            case R.id.movie_and_tv:
+//                isMovie = true;
+//                isTV = true;
+//                resetPage();
+//                Toast.makeText(this, "movies and tv shows are selected", Toast.LENGTH_SHORT).show();
+//                return true;
 
         }
         return false;
