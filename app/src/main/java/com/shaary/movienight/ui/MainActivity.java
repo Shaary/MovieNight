@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int PAGE = 1;
     public static final String LANGUAGE = "en-US";
     public static final String IMAGE_SIZE = "w185";
-    public static String append = "tv";
 
     //Request vars
     public static int voteCount = 0;
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onScrolled(recyclerView, dx, dy);
                 if (isLastItemDisplaying(recyclerView)) {
                     PAGE++;
-                    getDataResultsWithInit(PAGE);
+                    getDataResultsWithInit();
                 }
             }
         });
@@ -133,19 +132,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (response.isSuccessful()) {
                     DataResults results = response.body();
                     assert results != null;
-                    listOfData = results.getResults();
-                    Log.d(TAG, "onResponse: getDataResultsWithInit page " + PAGE);
-                    progressBar.setVisibility(View.GONE);
+                    if (listOfData.isEmpty()){
+                        listOfData = results.getResults();
+                        Log.d(TAG, "onResponse: getDataResultsWithInit page " + PAGE);
+                        progressBar.setVisibility(View.GONE);
 
+                        //Initializing Recycle view
+                        runOnUiThread(() -> {
+                            setView(listOfData);
+                            initRecyclerView(listOfData);});
+                    } else {
+                        newListOfData = results.getResults();
+                        setView(newListOfData);
+                        //add new list to the old to prevent outOfBound exception when click on a new film
+                        listOfData.addAll(newListOfData);
+                        recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), getListOfTitles(newListOfData)));
+                    }
                 } else {
                     showErrors(response.code());
                 }
+                progressBar.setVisibility(View.GONE);
                 Log.i(TAG, "onResponse: lol" + movieImageUrl);
-
-                //Initializing Recycle view
-                runOnUiThread(() -> {
-                    setView(listOfData);
-                    initRecyclerView(listOfData);});
             }
 
             @Override
@@ -156,62 +163,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
-
-    //TODO: check if it's possible to have only one get data results method
-
-    protected void getDataResultsWithInit(int page) {
-
-        progressBar.setVisibility(View.VISIBLE);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        final ApiInterface myInterface = retrofit.create(ApiInterface.class);
-
-        Call<DataResults> call;
-
-        if (isMovie) {
-            call = myInterface.getListOfMovies(API_KEY, LANGUAGE, SORT_BY, page,
-                    voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
-
-            Log.d(TAG, "getCall: append" + append);
-        } else {
-            call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, SORT_BY, page,
-                    voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
-        }
-
-        call.enqueue(new Callback<DataResults>() {
-            @Override
-            public void onResponse(@NonNull Call<DataResults> call, @NonNull Response<DataResults> response) {
-                if (response.isSuccessful()) {
-                    DataResults results = response.body();
-                    assert results != null;
-                    newListOfData = results.getResults();
-                    Log.d(TAG, "onResponse: getDataResultsWithInit page " + page);
-                    progressBar.setVisibility(View.GONE);
-
-                } else {
-                    showErrors(response.code());
-                }
-                Log.i(TAG, "onResponse: lol" + movieImageUrl);
-
-                setView(newListOfData);
-                //add new list to the old to prevent outOfBound exception when click on a new film
-                listOfData.addAll(newListOfData);
-                recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), getListOfTitles(newListOfData)));
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<DataResults> call, @NonNull Throwable t) {
-                Toast.makeText(MainActivity.this, "Something went wrong :( Check your internet connection", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Something went wrong: lol", t);
-                t.printStackTrace();
-            }
-        });
-    }
-
 
     private Call<DataResults> getCall() {
 
@@ -227,8 +178,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (isMovie) {
             call = myInterface.getListOfMovies(API_KEY, LANGUAGE, SORT_BY, PAGE,
                     voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
-
-            Log.d(TAG, "getCall: append" + append);
         } else {
             call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, SORT_BY, PAGE,
                     voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
@@ -244,13 +193,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //Gets the movie poster
                 movieImageUrl = BASE_IMAGE_URL + IMAGE_SIZE + posterPath;
                 movie.setPoster_path(movieImageUrl);
-
             } catch (NullPointerException npe) {
                 AlertDialogFragment alertDialogFragment = new AlertDialogFragment();
                 alertDialogFragment.show(getFragmentManager(), "error");
                 npe.printStackTrace();
             }
-
         }
     }
 
@@ -374,16 +321,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (id == R.id.clear_everything) {
-            PAGE = 1;
-            voteCount = 0;
-            voteAverage = 0;
-            year = 0;
+            resetPage();
             isMovie = true;
             isTV = false;
-            genreId = null;
-            releaseDateBegin = null;
-            releaseDateEnd = null;
-            SORT_BY = "popularity.desc";
             getDataResultsWithInit();
             return true;
         }
@@ -425,7 +365,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void resetPage() {
+        listOfData.clear();
         PAGE = 1;
+        voteCount = 0;
+        voteAverage = 0;
+        year = 0;
+        genreId = null;
+        releaseDateBegin = null;
+        releaseDateEnd = null;
+        SORT_BY = "popularity.desc";
     }
 
     private void showErrors(int errorCode) {
