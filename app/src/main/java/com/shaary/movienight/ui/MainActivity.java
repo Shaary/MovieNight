@@ -322,6 +322,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.clear_everything) {
             resetPage();
+            voteCount = 0;
+            voteAverage = 0;
+            year = 0;
+            genreId = null;
+            releaseDateBegin = null;
+            releaseDateEnd = null;
+            SORT_BY = "popularity.desc";
             isMovie = true;
             isTV = false;
             getDataResultsWithInit();
@@ -367,13 +374,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void resetPage() {
         listOfData.clear();
         PAGE = 1;
-        voteCount = 0;
-        voteAverage = 0;
-        year = 0;
-        genreId = null;
-        releaseDateBegin = null;
-        releaseDateEnd = null;
-        SORT_BY = "popularity.desc";
     }
 
     private void showErrors(int errorCode) {

@@ -111,7 +111,12 @@ public class SortTvShowDialog extends DialogFragment{
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.SORT_BY += sortOrder;
+                if (sortOrder != null) {
+                    MainActivity.SORT_BY += sortOrder;
+                } else {
+                    MainActivity.SORT_BY += ".desc";
+                }
+
                 ((MainActivity)getActivity()).resetPage();
                 ((MainActivity)getActivity()).getDataResultsWithInit();
                 getDialog().dismiss();
