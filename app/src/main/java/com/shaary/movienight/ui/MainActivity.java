@@ -1,6 +1,5 @@
 package com.shaary.movienight.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 
 import com.shaary.movienight.R;
 import com.shaary.movienight.helpers.ApiInterface;
-import com.shaary.movienight.helpers.RVAdapter;
 import com.shaary.movienight.helpers.RecyclerViewAdapter;
 import com.shaary.movienight.model.DataResults;
 import com.shaary.movienight.model.children.Result;
@@ -66,41 +64,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<Result> listOfData = new ArrayList<>();
     private List<Result> newListOfData = new ArrayList<>();
 
-    //layout vars
-    private GridLayoutManager gridLayoutManager;
     private static final int NUM_COLUMNS = 2;
     private RecyclerView recyclerView;
-    private RVAdapter adapter;
     private RecyclerViewAdapter recyclerViewAdapter;
     private ProgressBar progressBar;
-    private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     public static String movieImageUrl;
-
-    //Variables for pageination
-    private boolean isLoading = true;
-    private int pastVisibleItems = 0;
-    private int visibleItemCount = 0;
-    private int totalItemCount = 0;
-    private int previousTotal = 0;
-    private int viewThreshold = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
         //TODO: use butterknife
 
-        drawerLayout = findViewById(R.id.drawer_layout);
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
 
         recyclerView = findViewById(R.id.recycler_view);
-        gridLayoutManager = new GridLayoutManager(this, NUM_COLUMNS);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, NUM_COLUMNS);
         recyclerView.setLayoutManager(gridLayoutManager);
         progressBar = findViewById(R.id.progress_bar);
 
@@ -114,45 +99,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
         Log.d(TAG, "onCreate: started.");
 
-
         getDataResultsWithInit();
-        scroll();
-    }
 
-    //TODO: fix recycler view error
-    //TODO: figure out why first log doesn't scroll
-    //TODO: figure out why list of TV shows is screwed
-    private void scroll() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
-                visibleItemCount = gridLayoutManager.getChildCount();
-                totalItemCount = gridLayoutManager.getItemCount();
-                pastVisibleItems = gridLayoutManager.findFirstVisibleItemPosition();
-
-                if (dy > 0) {
-                    if (isLoading) {
-                        if (totalItemCount > previousTotal) {
-                            isLoading = false;
-                            previousTotal = totalItemCount;
-                        }
-                    }
-
-                    if (!isLoading && (totalItemCount - visibleItemCount) <= (pastVisibleItems + viewThreshold)) {
-                        PAGE++;
-                        setView(newListOfData);
-                        listOfData.addAll(newListOfData);
-                        recyclerViewAdapter.addResults(getListOfPosters(newListOfData), getListOfTitles(newListOfData));
-                        performPagination();
-                        isLoading = true;
-                        Log.d(TAG, "onScrolled: isMovie " + isMovie);
-                        Log.d(TAG, "onScrolled: isTv " + isTV);
-                    }
+                if (isLastItemDisplaying(recyclerView)) {
+                    PAGE++;
+                    getDataResultsWithInit(PAGE);
                 }
             }
         });
+    }
+
+    private boolean isLastItemDisplaying(RecyclerView recyclerView) {
+        if (recyclerView.getAdapter().getItemCount() != 0) {
+            int lastVisibleItemPosition = ((GridLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+            return lastVisibleItemPosition != RecyclerView.NO_POSITION && lastVisibleItemPosition == recyclerView.getAdapter().getItemCount() - 1;
+        }
+        return false;
     }
 
     protected void getDataResultsWithInit() {
@@ -163,9 +129,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         call.enqueue(new Callback<DataResults>() {
             @Override
-            public void onResponse(Call<DataResults> call, Response<DataResults> response) {
+            public void onResponse(@NonNull Call<DataResults> call, @NonNull Response<DataResults> response) {
                 if (response.isSuccessful()) {
                     DataResults results = response.body();
+                    assert results != null;
                     listOfData = results.getResults();
                     Log.d(TAG, "onResponse: getDataResultsWithInit page " + PAGE);
                     progressBar.setVisibility(View.GONE);
@@ -182,7 +149,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            public void onFailure(Call<DataResults> call, Throwable t) {
+            public void onFailure(@NonNull Call<DataResults> call, @NonNull Throwable t) {
+                Toast.makeText(MainActivity.this, "Something went wrong :( Check your internet connection", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Something went wrong: lol", t);
+                t.printStackTrace();
+            }
+        });
+    }
+
+    //TODO: check if it's possible to have only one get data results method
+
+    protected void getDataResultsWithInit(int page) {
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        final ApiInterface myInterface = retrofit.create(ApiInterface.class);
+
+        Call<DataResults> call;
+
+        if (isMovie) {
+            call = myInterface.getListOfMovies(API_KEY, LANGUAGE, SORT_BY, page,
+                    voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
+
+            Log.d(TAG, "getCall: append" + append);
+        } else {
+            call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, SORT_BY, page,
+                    voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
+        }
+
+        call.enqueue(new Callback<DataResults>() {
+            @Override
+            public void onResponse(@NonNull Call<DataResults> call, @NonNull Response<DataResults> response) {
+                if (response.isSuccessful()) {
+                    DataResults results = response.body();
+                    assert results != null;
+                    newListOfData = results.getResults();
+                    Log.d(TAG, "onResponse: getDataResultsWithInit page " + page);
+                    progressBar.setVisibility(View.GONE);
+
+                } else {
+                    showErrors(response.code());
+                }
+                Log.i(TAG, "onResponse: lol" + movieImageUrl);
+
+                setView(newListOfData);
+                //add new list to the old to prevent outOfBound exception when click on a new film
+                listOfData.addAll(newListOfData);
+                recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), getListOfTitles(newListOfData)));
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DataResults> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Something went wrong :( Check your internet connection", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "Something went wrong: lol", t);
                 t.printStackTrace();
@@ -212,35 +234,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
         }
         return call;
-    }
-
-    protected void performPagination() {
-
-        progressBar.setVisibility(View.VISIBLE);
-
-        Call<DataResults> call = getCall();
-
-        call.enqueue(new Callback<DataResults>() {
-            @Override
-            public void onResponse(Call<DataResults> call, Response<DataResults> response) {
-                if (response.isSuccessful()) {
-                        DataResults results = response.body();
-                        newListOfData = results.getResults();
-                        Log.d(TAG, "onResponse: pageination page " + PAGE);
-                    progressBar.setVisibility(View.GONE);
-
-                } else {
-                    showErrors(response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<DataResults> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Something went wrong :( Check your internet connection", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Something went wrong: lol", t);
-                t.printStackTrace();
-            }
-        });
     }
 
     private void setView(List<Result> data) {
@@ -274,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return titles;
     }
 
-        private List<String> getListOfPosters(List<Result> listOfData) {
+    private List<String> getListOfPosters(List<Result> listOfData) {
             ArrayList<String> posters = new ArrayList<>();
             for (Result result : listOfData) {
                 posters.add(result.getPoster_path());
@@ -287,37 +280,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
         recyclerViewAdapter = new RecyclerViewAdapter(this, getListOfPosters(listOfData), getListOfTitles(listOfData));
-        //recyclerView = findViewById(R.id.recycler_view);
-        //adapter = new RVAdapter(this, listOfData, isMovie, isTV);
         recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerViewAdapter.notifyDataSetChanged();
 
-        recyclerViewAdapter.setListener(new RecyclerViewAdapter.Listener() {
-            @Override
-            public void onClick(int position) {
-                ChoiceDialogFragment choiceDialogFragment = new ChoiceDialogFragment();
-                Bundle extras = new Bundle();
-                extras.putString("overview", listOfData.get(position).getOverview());
-                extras.putFloat("rating", (float)listOfData.get(position).getVote_average());
-                extras.putInt("vote count", listOfData.get(position).getVote_count());
+        recyclerViewAdapter.setListener(position -> {
+            ChoiceDialogFragment choiceDialogFragment = new ChoiceDialogFragment();
+            Bundle extras = new Bundle();
+            extras.putString("overview", listOfData.get(position).getOverview());
+            extras.putFloat("rating", (float)listOfData.get(position).getVote_average());
+            extras.putInt("vote count", listOfData.get(position).getVote_count());
 
-                if (isMovie) {
-                    extras.putString("title", listOfData.get(position).getTitle());
-                    extras.putString("date", listOfData.get(position).getRelease_date());
-                    extras.putString("type", "movie");
+            if (isMovie) {
+                extras.putString("title", listOfData.get(position).getTitle());
+                extras.putString("date", listOfData.get(position).getRelease_date());
+                extras.putString("type", "movie");
 
-                    //Log.d(TAG, "onClick: clicked on:  " + mResults.get(holder.getAdapterPosition()).getTitle());
-                } else {
-                    extras.putString("title", listOfData.get(position).getName());
-                    extras.putString("date", listOfData.get(position).getFirst_air_date());
-                    extras.putString("type", "tv show");
-                    //Log.d(TAG, "onClick: clicked on:  " + mResults.get(holder.getAdapterPosition()).getTitle());
-                }
-                choiceDialogFragment.setArguments(extras);
-                choiceDialogFragment.show(getSupportFragmentManager(), "choice");
+            } else {
+                extras.putString("title", listOfData.get(position).getName());
+                extras.putString("date", listOfData.get(position).getFirst_air_date());
+                extras.putString("type", "tv show");
             }
+            choiceDialogFragment.setArguments(extras);
+            choiceDialogFragment.show(getSupportFragmentManager(), "choice");
         });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -389,7 +375,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.clear_everything) {
             PAGE = 1;
-            previousTotal = 0;
             voteCount = 0;
             voteAverage = 0;
             year = 0;
@@ -405,7 +390,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return super.onOptionsItemSelected(item);
     }
-
 
     //TODO: implements methods that will sort. Figure out DiffUtil
     @Override
@@ -441,7 +425,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void resetPage() {
-        previousTotal = 0;
         PAGE = 1;
     }
 

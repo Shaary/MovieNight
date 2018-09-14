@@ -31,7 +31,7 @@ import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
-    public static final String TAG = RVAdapter.class.getSimpleName();
+    public static final String TAG = RecyclerViewAdapter.class.getSimpleName();
 
     private List<String> posters;
     private List<String> titles;
