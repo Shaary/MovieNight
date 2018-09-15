@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Flags
     public static boolean isMovie = true;
     public static boolean isTV = false;
+    public static boolean isBoth = false;
+    public static boolean canLoad = false;
 
     //Answer holders
     private List<Result> listOfData = new ArrayList<>();
@@ -106,7 +108,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onScrolled(recyclerView, dx, dy);
                 if (isLastItemDisplaying(recyclerView)) {
                     PAGE++;
-                    getDataResultsWithInit();
+                    Log.d(TAG, "onScrolled: canDownload " + canLoad);
+                    if (isBoth) {
+                        if (!canLoad) {
+                            isMovie = true;
+                            isTV = false;
+                            canLoad = true;
+                            getDataResultsWithInit();
+                        } else {
+                            isMovie = false;
+                            isTV = true;
+                            getDataResultsWithInit();
+                            canLoad = false;
+                        }
+                    } else {
+                        getDataResultsWithInit();
+                    }
+
                 }
             }
         });
@@ -124,48 +142,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         progressBar.setVisibility(View.VISIBLE);
 
-        Call<DataResults> call = getCall();
-
-        call.enqueue(new Callback<DataResults>() {
-            @Override
-            public void onResponse(@NonNull Call<DataResults> call, @NonNull Response<DataResults> response) {
-                if (response.isSuccessful()) {
-                    DataResults results = response.body();
-                    assert results != null;
-                    if (listOfData.isEmpty()){
-                        listOfData = results.getResults();
-                        Log.d(TAG, "onResponse: getDataResultsWithInit page " + PAGE);
-                        progressBar.setVisibility(View.GONE);
-
-                        //Initializing Recycle view
-                        runOnUiThread(() -> {
-                            setView(listOfData);
-                            initRecyclerView(listOfData);});
-                    } else {
-                        newListOfData = results.getResults();
-                        setView(newListOfData);
-                        //add new list to the old to prevent outOfBound exception when click on a new film
-                        listOfData.addAll(newListOfData);
-                        recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), getListOfTitles(newListOfData)));
-                    }
-                } else {
-                    showErrors(response.code());
-                }
-                progressBar.setVisibility(View.GONE);
-                Log.i(TAG, "onResponse: lol" + movieImageUrl);
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<DataResults> call, @NonNull Throwable t) {
-                Toast.makeText(MainActivity.this, "Something went wrong :( Check your internet connection", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Something went wrong: lol", t);
-                t.printStackTrace();
-            }
-        });
-    }
-
-    private Call<DataResults> getCall() {
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -182,7 +158,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, SORT_BY, PAGE,
                     voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
         }
-        return call;
+
+        call.enqueue(new Callback<DataResults>() {
+            @Override
+            public void onResponse(@NonNull Call<DataResults> call, @NonNull Response<DataResults> response) {
+                if (response.isSuccessful()) {
+                    DataResults results = response.body();
+                    assert results != null;
+                    if (listOfData.isEmpty()){
+                        listOfData = results.getResults();
+                        Log.d(TAG, "onResponse: getDataResultsWithInit page " + PAGE);
+                        progressBar.setVisibility(View.GONE);
+
+                        ArrayList<String> titles = new ArrayList<>();
+                        ArrayList<String> releaseDates = new ArrayList<>();
+                        ArrayList<String> types = new ArrayList<>();
+                        for (Result result : listOfData) {
+                            if (isMovie) {
+                                titles.add(result.getTitle());
+                                releaseDates.add(result.getRelease_date());
+                                types.add("Movie");
+                            }
+                            if (isTV) {
+                                titles.add(result.getName());
+                                releaseDates.add(result.getFirst_air_date());
+                                types.add("Tv Show");
+                            }
+                        }
+
+                        //Initializing Recycle view
+                        runOnUiThread(() -> {
+                            setView(listOfData);
+                            initRecyclerView(listOfData, titles, releaseDates, types);});
+                    } else {
+                        newListOfData = results.getResults();
+                        setView(newListOfData);
+                        //add new list to the old to prevent outOfBound exception when click on a new film
+                        listOfData.addAll(newListOfData);
+                        recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), getListOfTitles(newListOfData)));
+                    }
+                } else {
+                    showErrors(response.code());
+                }
+                progressBar.setVisibility(View.GONE);
+                //Log.i(TAG, "onResponse: " + movieImageUrl);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DataResults> call, @NonNull Throwable t) {
+                Toast.makeText(MainActivity.this, "Something went wrong :( Check your internet connection", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Something went wrong: ", t);
+                t.printStackTrace();
+            }
+        });
     }
 
     private void setView(List<Result> data) {
@@ -223,10 +251,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
 
-    private void initRecyclerView(List<Result> listOfData) {
+    private void initRecyclerView(List<Result> listOfData, ArrayList<String> titles, ArrayList<String> releaseDates, ArrayList<String> types) {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
-        recyclerViewAdapter = new RecyclerViewAdapter(this, getListOfPosters(listOfData), getListOfTitles(listOfData));
+        recyclerViewAdapter = new RecyclerViewAdapter(this, getListOfPosters(listOfData), titles);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerViewAdapter.notifyDataSetChanged();
 
@@ -236,17 +264,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             extras.putString("overview", listOfData.get(position).getOverview());
             extras.putFloat("rating", (float)listOfData.get(position).getVote_average());
             extras.putInt("vote count", listOfData.get(position).getVote_count());
+            extras.putString("title", titles.get(position));
+            //extras.putString("date", releaseDates.get(position));
+            //extras.putString("type", types.get(position));
 
-            if (isMovie) {
-                extras.putString("title", listOfData.get(position).getTitle());
-                extras.putString("date", listOfData.get(position).getRelease_date());
-                extras.putString("type", "movie");
-
-            } else {
-                extras.putString("title", listOfData.get(position).getName());
-                extras.putString("date", listOfData.get(position).getFirst_air_date());
-                extras.putString("type", "tv show");
-            }
+//            if (isMovie) {
+//                //extras.putString("title", listOfData.get(position).getTitle());
+//                //extras.putString("date", listOfData.get(position).getRelease_date());
+//                //extras.putString("type", "movie");
+//
+//            } else {
+//                //extras.putString("title", listOfData.get(position).getName());
+//                //extras.putString("date", listOfData.get(position).getFirst_air_date());
+//                //extras.putString("type", "tv show");
+//            }
             choiceDialogFragment.setArguments(extras);
             choiceDialogFragment.show(getSupportFragmentManager(), "choice");
         });
@@ -347,6 +378,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.movies:
                 isMovie = true;
                 isTV = false;
+                isBoth = false;
                 resetPage();
                 getDataResultsWithInit();
                 Toast.makeText(this, "movies are selected", Toast.LENGTH_SHORT).show();
@@ -355,17 +387,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.tv:
                 isMovie = false;
                 isTV = true;
+                isBoth = false;
                 resetPage();
                 getDataResultsWithInit();
                 Toast.makeText(this, "tv shows are selected", Toast.LENGTH_SHORT).show();
                 return true;
 
-//            case R.id.movie_and_tv:
-//                isMovie = true;
-//                isTV = true;
-//                resetPage();
-//                Toast.makeText(this, "movies and tv shows are selected", Toast.LENGTH_SHORT).show();
-//                return true;
+            case R.id.movie_and_tv:
+                resetPage();
+                isBoth = true;
+                isMovie = false;
+                isTV = true;
+                getDataResultsWithInit();
+                Toast.makeText(this, "movies and tv shows are selected", Toast.LENGTH_SHORT).show();
+                return true;
 
         }
         return false;

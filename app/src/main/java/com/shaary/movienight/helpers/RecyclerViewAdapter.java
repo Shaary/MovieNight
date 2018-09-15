@@ -82,7 +82,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .apply(new RequestOptions().placeholder(R.drawable.question_mark).error(R.drawable.question_mark))
                 .into(holder.image);
 
-        Log.d(TAG, "onBindViewHolder: poster " + posters.get(position));
+        //Log.d(TAG, "onBindViewHolder: poster " + posters.get(position));
 
         holder.imageName.setText(titles.get(position));
         holder.image.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +98,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return posters.size();
+        return titles.size();
     }
 
     public void setListener(Listener listener){
