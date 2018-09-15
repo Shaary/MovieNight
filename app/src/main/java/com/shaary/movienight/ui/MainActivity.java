@@ -37,8 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-
-    //Requst constants
+    //Request constants
     public static final String API_KEY = "f2388368dc53b8b5a5a298ec53148eed";
     public static final String BASE_URL = "https://api.themoviedb.org";
     public static final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p/";
@@ -59,18 +58,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static boolean isMovie = true;
     public static boolean isTV = false;
     public static boolean isBoth = false;
-    public static boolean canLoad = false;
+    //Checks if the next call can be made
+    private boolean canLoad = false;
 
     //Answer holders
     private List<Result> listOfData = new ArrayList<>();
     private List<Result> newListOfData = new ArrayList<>();
 
+    //UI vars
     private static final int NUM_COLUMNS = 2;
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
     private ProgressBar progressBar;
     private ActionBarDrawerToggle toggle;
-    public static String movieImageUrl;
+    public static String resultPosterPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     } else {
                         getDataResultsWithInit();
                     }
-
                 }
             }
         });
@@ -164,12 +164,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(@NonNull Call<DataResults> call, @NonNull Response<DataResults> response) {
                 if (response.isSuccessful()) {
                     DataResults results = response.body();
-                    assert results != null;
-                    if (listOfData.isEmpty()){
+                    if (results.getResults().size() == 0){
+                        Toast.makeText(MainActivity.this, "There's no match found to your search request", Toast.LENGTH_SHORT).show();
+                    }
+                    else if (listOfData.isEmpty()){
                         listOfData = results.getResults();
                         Log.d(TAG, "onResponse: getDataResultsWithInit page " + PAGE);
                         progressBar.setVisibility(View.GONE);
 
+                        //Creates lists with info for recyclerview
                         ArrayList<String> titles = new ArrayList<>();
                         ArrayList<String> releaseDates = new ArrayList<>();
                         ArrayList<String> types = new ArrayList<>();
@@ -188,20 +191,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                         //Initializing Recycle view
                         runOnUiThread(() -> {
-                            setView(listOfData);
+                            setPostersPath(listOfData);
                             initRecyclerView(listOfData, titles, releaseDates, types);});
                     } else {
                         newListOfData = results.getResults();
-                        setView(newListOfData);
-                        //add new list to the old to prevent outOfBound exception when click on a new film
-                        listOfData.addAll(newListOfData);
-                        recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), getListOfTitles(newListOfData)));
+                        setPostersPath(newListOfData);
+
+                        //Creates new lists with info to update recyclerview
+                        ArrayList<String> newTitles = new ArrayList<>();
+                        ArrayList<String> newReleaseDates = new ArrayList<>();
+                        ArrayList<String> newTypes = new ArrayList<>();
+
+                        for (Result result : newListOfData) {
+                            if (isMovie) {
+                                newTitles.add(result.getTitle());
+                                newReleaseDates.add(result.getRelease_date());
+                                newTypes.add("Movie");
+                            }
+                            if (isTV) {
+                                newTitles.add(result.getName());
+                                newReleaseDates.add(result.getFirst_air_date());
+                                newTypes.add("Tv Show");
+                            }
+                        }
+                        //Update recyclerview
+                        recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), newTitles, newReleaseDates, newTypes, newListOfData));
                     }
                 } else {
                     showErrors(response.code());
                 }
                 progressBar.setVisibility(View.GONE);
-                //Log.i(TAG, "onResponse: " + movieImageUrl);
+                //Log.i(TAG, "onResponse: " + resultPosterPath);
             }
 
             @Override
@@ -213,14 +233,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void setView(List<Result> data) {
+    private void setPostersPath(List<Result> data) {
         for (int i = 0; i < data.size(); i++) {
-            Result movie = data.get(i);
+            Result result = data.get(i);
             try {
-                String posterPath = movie.getPoster_path();
+                String posterPath = result.getPoster_path();
                 //Gets the movie poster
-                movieImageUrl = BASE_IMAGE_URL + IMAGE_SIZE + posterPath;
-                movie.setPoster_path(movieImageUrl);
+                resultPosterPath = BASE_IMAGE_URL + IMAGE_SIZE + posterPath;
+                result.setPoster_path(resultPosterPath);
             } catch (NullPointerException npe) {
                 AlertDialogFragment alertDialogFragment = new AlertDialogFragment();
                 alertDialogFragment.show(getFragmentManager(), "error");
@@ -229,35 +249,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private List<String> getListOfTitles(List<Result> listOfData) {
-        ArrayList<String> titles = new ArrayList<>();
-        for (Result result : listOfData) {
-            if (isMovie) {
-                titles.add(result.getTitle());
-            }
-            if (isTV) {
-                titles.add(result.getName());
-            }
-        }
-        return titles;
-    }
-
     private List<String> getListOfPosters(List<Result> listOfData) {
             ArrayList<String> posters = new ArrayList<>();
             for (Result result : listOfData) {
                 posters.add(result.getPoster_path());
             }
             return posters;
-
         }
 
     private void initRecyclerView(List<Result> listOfData, ArrayList<String> titles, ArrayList<String> releaseDates, ArrayList<String> types) {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
-        recyclerViewAdapter = new RecyclerViewAdapter(this, getListOfPosters(listOfData), titles);
+        recyclerViewAdapter = new RecyclerViewAdapter(this, getListOfPosters(listOfData), titles, releaseDates, types, listOfData);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerViewAdapter.notifyDataSetChanged();
 
+        //Shows movie or tv full info
         recyclerViewAdapter.setListener(position -> {
             ChoiceDialogFragment choiceDialogFragment = new ChoiceDialogFragment();
             Bundle extras = new Bundle();
@@ -265,19 +272,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             extras.putFloat("rating", (float)listOfData.get(position).getVote_average());
             extras.putInt("vote count", listOfData.get(position).getVote_count());
             extras.putString("title", titles.get(position));
-            //extras.putString("date", releaseDates.get(position));
-            //extras.putString("type", types.get(position));
 
-//            if (isMovie) {
-//                //extras.putString("title", listOfData.get(position).getTitle());
-//                //extras.putString("date", listOfData.get(position).getRelease_date());
-//                //extras.putString("type", "movie");
-//
-//            } else {
-//                //extras.putString("title", listOfData.get(position).getName());
-//                //extras.putString("date", listOfData.get(position).getFirst_air_date());
-//                //extras.putString("type", "tv show");
-//            }
             choiceDialogFragment.setArguments(extras);
             choiceDialogFragment.show(getSupportFragmentManager(), "choice");
         });
@@ -302,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             GenreAlertDialog genreAlertDialog = new GenreAlertDialog();
             genreAlertDialog.show(getFragmentManager(), "genres");
 
-            Log.d(TAG, "onOptionsItemSelected: lol" + genreId);
+            Log.d(TAG, "onOptionsItemSelected: " + genreId);
             return true;
         }
 
@@ -325,12 +320,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (id == R.id.sort) {
-
-            if (isMovie && !isTV) {
-                SortMovieDialog sortDialog = new SortMovieDialog();
-                sortDialog.show(getFragmentManager(), "sort");
-            } else if ((!isMovie && isTV) || (isMovie && isTV)) {
+            //When you call both movies and tv shows it shows you sort options for tv shows only
+            //because otherwise sort by revenue which tv shows don't have will affect the app performance
+            if (isTV || isBoth) {
                 SortTvShowDialog sortDialog = new SortTvShowDialog();
+                sortDialog.show(getFragmentManager(), "sort");
+            } else {
+                SortMovieDialog sortDialog = new SortMovieDialog();
                 sortDialog.show(getFragmentManager(), "sort");
             }
 
@@ -360,8 +356,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             releaseDateBegin = null;
             releaseDateEnd = null;
             SORT_BY = "popularity.desc";
-            isMovie = true;
-            isTV = false;
             getDataResultsWithInit();
             return true;
         }
@@ -401,13 +395,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getDataResultsWithInit();
                 Toast.makeText(this, "movies and tv shows are selected", Toast.LENGTH_SHORT).show();
                 return true;
-
         }
         return false;
     }
 
     public void resetPage() {
         listOfData.clear();
+        newListOfData.clear();
         PAGE = 1;
     }
 
@@ -428,7 +422,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Toast.LENGTH_SHORT).show();
         }
     }
-
 }
 
 

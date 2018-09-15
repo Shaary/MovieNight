@@ -14,7 +14,9 @@ import com.shaary.movienight.model.Genres;
 import java.util.ArrayList;
 
 import static android.support.constraint.Constraints.TAG;
+import static com.shaary.movienight.ui.MainActivity.isBoth;
 import static com.shaary.movienight.ui.MainActivity.isMovie;
+import static com.shaary.movienight.ui.MainActivity.isTV;
 
 public class GenreAlertDialog extends DialogFragment {
 
@@ -28,7 +30,7 @@ public class GenreAlertDialog extends DialogFragment {
 
         if (isMovie) {
             listItems = getResources().getStringArray(R.array.movie_genres);
-        } else {
+        } else if (isTV || isBoth) {
             listItems = getResources().getStringArray(R.array.tv_show_genres);
         }
 

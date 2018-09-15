@@ -2,6 +2,7 @@ package com.shaary.movienight.helpers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,17 +36,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private List<String> posters;
     private List<String> titles;
+    private List<String> releaseDates;
+    private List<String> types;
     private Context context;
     private Listener listener;
+    private List<Result> listOfData;
 
     public interface Listener {
         void onClick(int position);
     }
 
-    public RecyclerViewAdapter(Context context, List<String> posters, List<String> titles) {
+    public RecyclerViewAdapter(Context context, List<String> posters, List<String> titles, List<String> releaseDates, List<String> types, List<Result> listOfData) {
         this.context = context;
         this.posters = posters;
         this.titles = titles;
+        this.releaseDates = releaseDates;
+        this.types = types;
+        this.listOfData = listOfData;
     }
 
     @NonNull
@@ -84,7 +91,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         //Log.d(TAG, "onBindViewHolder: poster " + posters.get(position));
 
+        if(types.get(position) == "Movie") {
+            holder.parentLayout.setBackgroundColor(Color.parseColor("#1e90ff"));
+        } else {
+            holder.parentLayout.setBackgroundColor(Color.parseColor("#afeeee"));
+        }
+
         holder.imageName.setText(titles.get(position));
+        holder.releaseDate.setText(String.format("(%s)", releaseDates.get(position)));
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,12 +107,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 }
             }
         });
-
     }
 
     @Override
     public int getItemCount() {
-        return titles.size();
+        return listOfData.size();
     }
 
     public void setListener(Listener listener){
@@ -108,19 +121,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView imageName;
+        TextView releaseDate;
         RelativeLayout parentLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image);
             imageName = itemView.findViewById(R.id.imageName);
+            releaseDate = itemView.findViewById(R.id.releaseDate);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
     }
 
-    public void addResults(List<String> posters, List<String> titles) {
+    public void addResults(List<String> posters, List<String> titles, List<String> releaseDates, List<String> types, List<Result> listOfData) {
         this.posters.addAll(posters);
         this.titles.addAll(titles);
+        this.releaseDates.addAll(releaseDates);
+        this.types.addAll(types);
+        this.listOfData.addAll(listOfData);
         notifyDataSetChanged();
 
     }

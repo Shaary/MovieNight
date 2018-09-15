@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_gradieint">
 
     <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_gradieint"
         android:id="@+id/choice_relative_layout"
-        android:layout_width="384dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_margin="0dp"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        >
 
         <TextView
             android:id="@+id/title"
@@ -21,30 +19,19 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="24dp"
+            android:padding="8dp"
             android:text="TextView"
             android:textAlignment="center"
             android:textColor="@color/star"
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/title"
-            android:layout_marginEnd="20dp"
-            android:maxLines="20"
-            android:scrollbars="vertical"
-            android:text="TextView"
-            android:textColor="@android:color/white" />
-
         <RatingBar
             android:id="@+id/choice_ratingBar"
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/date"
+            android:layout_below="@id/title"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="4dp"
@@ -53,57 +40,47 @@
             android:stepSize=".5" />
 
         <TextView
-            android:id="@+id/movie_tv_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <TextView
             android:id="@+id/num_of_votes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/choice_ratingBar"
-            android:layout_below="@+id/date"
-            android:layout_marginLeft="10dp"
+            android:layout_below="@id/choice_ratingBar"
+            android:layout_centerHorizontal="true"
             android:text="TextView" />
 
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/num_of_votes"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/summary_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    />
+                <Button
+                    android:id="@+id/choice_ok_button"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="OK"
+                    />
+
+            </LinearLayout>
+
+
+        </ScrollView>
 
     </RelativeLayout>
-
-
-    <TextView
-        android:id="@+id/summary_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/choice_ok_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/choice_relative_layout" />
-
-    <Button
-        android:id="@+id/choice_ok_button"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/summary_text"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="OK"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
-
-
-</android.support.constraint.ConstraintLayout>

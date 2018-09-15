@@ -15,6 +15,7 @@
     <item
         android:id="@+id/movie_and_tv"
         android:title="MOVIES AND TV SHOWS"
+        android:icon="@drawable/ic_video_library_black_24dp"
         />
 
 

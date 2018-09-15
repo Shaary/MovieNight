@@ -20,10 +20,8 @@ public class ChoiceDialogFragment extends DialogFragment {
     public static final String TAG = ChoiceDialogFragment.class.getSimpleName();
 
     private TextView summary;
-    private TextView movieOrTv;
     private Button ok;
     private RatingBar ratingBar;
-    private TextView date;
     private TextView title;
     private TextView numOfVotes;
 
@@ -35,21 +33,16 @@ public class ChoiceDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.choice_dialog_fragment, container, false);
 
         summary = view.findViewById(R.id.summary_text);
-        movieOrTv = view.findViewById(R.id.movie_tv_text);
         ok = view.findViewById(R.id.choice_ok_button);
         ratingBar = view.findViewById(R.id.choice_ratingBar);
-        date = view.findViewById(R.id.date);
         title = view.findViewById(R.id.title);
         numOfVotes = view.findViewById(R.id.num_of_votes);
 
         summary.setMovementMethod(new ScrollingMovementMethod());
 
-
-        movieOrTv.setText(getArguments().getString("type"));
         numOfVotes.setText("(Voted: " + getArguments().getInt("vote count") + ")");
         ratingBar.setRating(getArguments().getFloat("rating"));
         summary.setText(getArguments().getString("overview"));
-        date.setText(getArguments().getString("date"));
         title.setText(getArguments().getString("title"));
         Log.d(TAG, "onCreateView: lol" + getArguments().getFloat("rating"));
 
