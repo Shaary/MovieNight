@@ -3,7 +3,6 @@ package com.shaary.movienight.model;
 import android.util.Log;
 
 import com.shaary.movienight.model.children.Result;
-import com.shaary.movienight.model.children.TvShowResult;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,9 +15,6 @@ public class DataResults {
     private int total_results;
     private int total_pages;
     private List<Result> results;
-    private List<TvShowResult> tvShowResults;
-
-
 
     public static List<Result> SORT_BY_TITLE (List<Result> listOfData) {
        List<Result> resultsList = listOfData;
@@ -76,12 +72,5 @@ public class DataResults {
             this.results = results;
         }
 
-        public List<TvShowResult> getTvShowResults() {
-        return tvShowResults;
-    }
-
-    public void setTvShowResults(List<TvShowResult> tvShowResults) {
-        this.tvShowResults = tvShowResults;
-    }
     }
 

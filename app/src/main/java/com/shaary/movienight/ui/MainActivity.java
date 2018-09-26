@@ -1,5 +1,7 @@
 package com.shaary.movienight.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -22,6 +24,7 @@ import com.shaary.movienight.helpers.RecyclerViewAdapter;
 import com.shaary.movienight.model.DataResults;
 import com.shaary.movienight.model.children.Result;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +38,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    //TODO: check in all fragments if OK is clicked without choosing something. And if it is just dismiss the window
+    //TODO: Checked options should remain visible when open the dialog again
+    
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -83,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Movies");
         ButterKnife.bind(this);
 
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -105,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (isLastItemDisplaying(recyclerView)) {
                     PAGE++;
                     Log.d(TAG, "onScrolled: canDownload " + canLoad);
+                    //If it's set to download both movie and tv then this method loads first tv then movie and so on
                     if (isBoth) {
                         if (!canLoad) {
                             isMovie = true;
@@ -115,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             isMovie = false;
                             isTV = true;
                             getDataResultsWithInit();
+                            //Sets canLoad to false so it won't download several pages at a time
                             canLoad = false;
                         }
                     } else {
@@ -192,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         newListOfData = results.getResults();
                         setPostersPath(newListOfData);
 
-                        //Creates new lists with info to update recyclerview
+                        //Creates new lists with info endDate update recyclerview
                         ArrayList<String> newTitles = new ArrayList<>();
                         ArrayList<String> newReleaseDates = new ArrayList<>();
                         ArrayList<String> newTypes = new ArrayList<>();
@@ -285,9 +295,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (toggle.onOptionsItemSelected(item)) {
             return true;
         }
-
         int id = item.getItemId();
 
+        //Creates a dialog when menu buttons are clicked
         switch (id) {
             case R.id.genre_test:
                 GenreAlertDialog genreAlertDialog = new GenreAlertDialog();
@@ -330,75 +340,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-//        if (id == R.id.genre_test) {
-//            GenreAlertDialog genreAlertDialog = new GenreAlertDialog();
-//            genreAlertDialog.show(getFragmentManager(), "genres");
-//
-//            Log.d(TAG, "onOptionsItemSelected: " + genreId);
-//            return true;
-//        }
-//
-//        if (id == R.id.vote_average) {
-//            RatingAlertDialog ratingAlertDialog = new RatingAlertDialog();
-//            ratingAlertDialog.show(getFragmentManager(), "votes");
-//            return true;
-//        }
-//
-//        if (id == R.id.min_num_rating) {
-//            MinNumRatingDialog minNumRatingDialog = new MinNumRatingDialog();
-//            minNumRatingDialog.show(getFragmentManager(), "rating");
-//            return true;
-//        }
-//
-//        if (id == R.id.release_range) {
-//            DateRangeDialog dateRangeDialog = new DateRangeDialog();
-//            dateRangeDialog.show(getFragmentManager(), "date");
-//            return true;
-//        }
-//
-//        if (id == R.id.sort) {
-//            //When you call both movies and tv shows it shows you sort options for tv shows only
-//            //because otherwise sort by revenue which tv shows don't have will affect the app performance
-//            if (isTV || isBoth) {
-//                SortTvShowDialog sortDialog = new SortTvShowDialog();
-//                sortDialog.show(getFragmentManager(), "sort");
-//            } else {
-//                SortMovieDialog sortDialog = new SortMovieDialog();
-//                sortDialog.show(getFragmentManager(), "sort");
-//            }
-//
-////            Toast.makeText(this, "movies are sorted", Toast.LENGTH_SHORT).show();
-////            Log.i(TAG, "onNavigationItemSelected: old list, lol" + listOfData);
-////            if (isMovie) {
-////                final List<Result> newResults = DataResults.SORT_BY_TITLE(listOfData);
-////                Log.i(TAG, "onNavigationItemSelected: new list, lol" + newResults);
-////
-////                //updates the adapter
-////                adapter.updateResultsList(newResults);}
-////
-////            else {
-////                final List<Result> newResults = DataResults.SORT_BY_NAME(listOfData);
-////                Log.i(TAG, "onNavigationItemSelected: new list, lol" + newResults);
-////                //updates the adapter
-////                adapter.updateResultsList(newResults);
-//            return true;
-//        }
-
-//        if (id == R.id.clear_everything) {
-//            resetPage();
-//            voteCount = 0;
-//            voteAverage = 0;
-//            year = 0;
-//            genreId = null;
-//            releaseDateBegin = null;
-//            releaseDateEnd = null;
-//            SORT_BY = "popularity.desc";
-//            getDataResultsWithInit();
-//            return true;
-//        }
-
-
-
     //TODO: implements methods that will sort. Figure out DiffUtil
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -406,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.movies:
+                getSupportActionBar().setTitle(R.string.movies_menu);
                 isMovie = true;
                 isTV = false;
                 isBoth = false;
@@ -415,6 +357,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
 
             case R.id.tv:
+                getSupportActionBar().setTitle(R.string.tv_shows_menu);
                 isMovie = false;
                 isTV = true;
                 isBoth = false;
@@ -424,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
 
             case R.id.movie_and_tv:
+                getSupportActionBar().setTitle(R.string.movies_and_tv_shows_menu);
                 resetPage();
                 isBoth = true;
                 isMovie = false;
@@ -444,19 +388,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void showErrors(int errorCode) {
         switch (errorCode) {
             case 404:
-                Toast.makeText(MainActivity.this, "server returned error: page is not found",
+                Toast.makeText(MainActivity.this, R.string.error_message_404,
                         Toast.LENGTH_SHORT).show();
                 break;
 
             case 500:
-                Toast.makeText(MainActivity.this, "server returned error: server is broken",
+                Toast.makeText(MainActivity.this, R.string.error_message_500,
                         Toast.LENGTH_SHORT).show();
                 break;
 
             default:
-                Toast.makeText(MainActivity.this, "server returned error: unknown error",
+                Toast.makeText(MainActivity.this, R.string.error_message_server,
                         Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void openTMDB(MenuItem item) {
+        Intent intent = new Intent("android.intent.action.VIEW", Uri.parse(getString(R.string.tmdb_url)));
+        startActivity(intent);
     }
 }
 

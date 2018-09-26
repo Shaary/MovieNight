@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import static android.support.constraint.Constraints.TAG;
 
 public class Genres {
-    Map<String, String> genreMap= new TreeMap<>();
+    private Map<String, String> genreMap = new TreeMap<>();
 
     public Genres() {
         genreMap.put("Action", "28");
@@ -44,22 +44,14 @@ public class Genres {
         String id = "";
         for (int i = 0; i < genreNames.size(); i++) {
             String genreName = genreNames.get(i);
-            Log.d(TAG, "getId: lol" + genreName);
             if (genreMap.containsKey(genreName)) {
                 id = id + genreMap.get(genreName);
-                Log.d(TAG, "getId: lol" + id);
                 if (i != genreNames.size() - 1) {
                     id = id + "|";
-                    Log.d(TAG, "getId: lol" + id);
                 }
             }
         }
-        Log.d(TAG, "getId: lol" + id);
+        Log.d(TAG, "getId: " + id);
         return id;
     }
-
-
-
-
-
 }

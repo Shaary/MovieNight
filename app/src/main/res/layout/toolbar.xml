@@ -5,8 +5,4 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_gradieint"
     android:elevation="4dp">
-
-
-
-
 </android.support.v7.widget.Toolbar>

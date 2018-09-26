@@ -1,37 +1,52 @@
 <resources>
+    //Alphabetic order
     <string name="app_name">MovieNight</string>
-    <string name="error_title">Oops! Sorry</string>
-    <string name="error_message">There was an error. Please try again</string>
-    <string name="error_ok_button">OK</string>
-    <string name="network_unavailable_message">Sorry, the network is unavailable</string>
-    <string name="open">Open</string>
-    <string name="close">Close</string>
-    <string name="ok_label">OK</string>
-    <string name="dismiss_label">Dismiss</string>
+    <string name="ascending_order_text">ASCENDING ORDER</string>
+    <string name="by_number_of_votes_text">BY NUMBER OF VOTES</string>
+    <string name="by_popularity_text">BY POPULARITY</string>
+    <string name="by_rating_text">BY RATING</string>
+    <string name="by_release_date_text">BY RELEASE DATE</string>
+    <string name="by_revenue_text">BY REVENUE</string>
+    <string name="choose_a_minimum_number_of_votes_title">Choose a minimum number of votes</string>
+    <string name="clear_all_button_text">CLEAR ALL</string>
     <string name="clear_all_label">Clear all</string>
-    <string name="genre_dialog_title">Choose your genre</string>
-    <string name="select_date_text">Select a movie date range</string>
+    <string name="clear_choices_text">Clear choices</string>
+    <string name="close">Close</string>
     <string name="date_begin">From:</string>
     <string name="date_end">To:</string>
-    <string name="ok_button_text">OK</string>
-    <string name="clear_all_button_text">CLEAR ALL</string>
-    <string name="dismiss_button_text">DISMISS</string>
-    <string name="choose_a_minimum_number_of_votes_title">Choose a minimum number of votes</string>
-    <string name="by_popularity_text">BY POPULARITY</string>
-    <string name="by_release_date_text">BY RELEASE DATE</string>
-    <string name="by_rating_text">BY RATING</string>
-    <string name="ascending_order_text">ASCENDING ORDER</string>
     <string name="descending_order_text">DESCENDING ORDER</string>
-    <string name="by_revenue_text">BY REVENUE</string>
-    <string name="by_number_of_votes_text">BY NUMBER OF VOTES</string>
-    <string name="sort_tv_shows_text">SORT TV SHOWS</string>
-    <string name="sort_movies_text">SORT MOVIES</string>
+    <string name="dismiss_button_text">DISMISS</string>
+    <string name="dismiss_label">Dismiss</string>
+    <string name="error_message_404">server returned error: page is not found</string>
+    <string name="error_message_500">server returned error: server is broken</string>
+    <string name="error_message">There was an error. Please try again</string>
+    <string name="error_message_server">server returned error: unknown error</string>
+    <string name="error_ok_button">OK</string>
+    <string name="error_title">Oops! Sorry</string>
+    <string name="genre_dialog_title">Choose your genre</string>
+    <string name="genre_selection_text">Genre selection</string>
+    <string name="minimum_number_of_votes_text">Minimum number of votes</string>
+    <string name="movies_and_tv_shows_menu">MOVIES AND TVs</string>
+    <string name="movies_menu">MOVIES</string>
+    <string name="network_unavailable_message">Sorry, the network is unavailable</string>
+    <string name="ok_button_text">OK</string>
+    <string name="ok_label">OK</string>
+    <string name="open">Open</string>
+    <string name="rating_text">Rating</string>
+    <string name="release_date_range_text">Release date range</string>
+    <string name="select_date_text">Select a movie date range</string>
     <string name="sort_movies_and_tv_shows_text">SORT MOVIES AND TV SHOWS</string>
+    <string name="sort_movies_text">SORT MOVIES</string>
+    <string name="sort_text">Sort</string>
+    <string name="sort_tv_shows_text">SORT TV SHOWS</string>
+    <string name="tmdb_text">tmdb</string>
+    <string name="tmdb_url">https://www.themoviedb.org/?language=en-US</string>
+    <string name="toast_mov_and_tv_are_selected">movies and tv shows are selected</string>
+    <string name="toast_movies_are_selected">movies are selected</string>
     <string name="toast_no_match_found_text">There\'s no match found to your search request</string>
     <string name="toast_something_went_wrong_text">Something went wrong :( Check your internet connection</string>
-    <string name="toast_movies_are_selected">movies are selected</string>
     <string name="toast_tv_shows_are_selected">tv shows are selected</string>
-    <string name="toast_mov_and_tv_are_selected">movies and tv shows are selected</string>
+    <string name="tv_shows_menu">TV SHOWS</string>
 
 
     <string-array name="movie_genres">
@@ -76,10 +91,8 @@
 
     <string-array name="min_num_rating">
         <item>0</item>
-        <item>10</item>
         <item>50</item>
         <item>200</item>
-        <item>300</item>
         <item>500</item>
         <item>1000</item>
         <item>2000</item>

@@ -15,26 +15,25 @@ import android.widget.Spinner;
 
 import com.shaary.movienight.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MinNumRatingDialog extends DialogFragment{
 
     public static final String TAG = MinNumRatingDialog.class.getSimpleName();
 
-    private Spinner spinner;
-    private Button okButton;
-    private Button dismissButton;
-    private Button clearAllButton;
+   @BindView(R.id.number_of_ratings) Spinner spinner;
+   @BindView(R.id.num_rating_ok_button) Button okButton;
+   @BindView(R.id.num_rating_dismiss) Button dismissButton;
+   @BindView(R.id.num_rating_clear_all) Button clearAllButton;
     private int minNumVote;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.min_num_rating_dialog, container, false);
+        ButterKnife.bind(this, view);
         Context context = getActivity();
-
-        spinner = view.findViewById(R.id.number_of_ratings);
-        okButton = view.findViewById(R.id.num_rating_ok_button);
-        dismissButton = view.findViewById(R.id.num_rating_dismiss);
-        clearAllButton = view.findViewById(R.id.num_rating_clear_all);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context, R.array.min_num_rating, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -44,40 +43,28 @@ public class MinNumRatingDialog extends DialogFragment{
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                minNumVote = Integer.parseInt(spinner.getItemAtPosition(position).toString());
-                Log.d(TAG, "onItemSelected: lol " + minNumVote);
+                Log.d(TAG, "onItemSelected: " + minNumVote);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
-        dismissButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDialog().dismiss();
-            }
+        dismissButton.setOnClickListener(v -> getDialog().dismiss());
+
+        clearAllButton.setOnClickListener(v -> {
+            MainActivity.voteCount = 0;
+            ((MainActivity)getActivity()).resetPage();
+            ((MainActivity)getActivity()).getDataResultsWithInit();
+            getDialog().dismiss();
         });
 
-        clearAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).voteCount = 0;
-                ((MainActivity)getActivity()).resetPage();
-                ((MainActivity)getActivity()).getDataResultsWithInit();
-                getDialog().dismiss();
-            }
-        });
-
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).voteCount = minNumVote;
-                ((MainActivity)getActivity()).resetPage();
-                ((MainActivity)getActivity()).getDataResultsWithInit();
-                getDialog().dismiss();
-            }
+        okButton.setOnClickListener(v -> {
+            MainActivity.voteCount = minNumVote;
+            ((MainActivity)getActivity()).resetPage();
+            ((MainActivity)getActivity()).getDataResultsWithInit();
+            getDialog().dismiss();
         });
         return view;
     }

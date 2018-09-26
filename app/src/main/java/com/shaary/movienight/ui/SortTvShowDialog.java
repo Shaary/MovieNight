@@ -36,13 +36,12 @@ public class SortTvShowDialog extends DialogFragment{
         final View view = inflater.inflate(R.layout.sort_dialog_tv, container, false);
         ButterKnife.bind(this, view);
 
-        //Sets dialog name to tv shows
-        if(!MainActivity.isMovie && MainActivity.isTV) {
-            title.setText(R.string.sort_tv_shows_text);
-        }
         //Sets dialog name to movies and tv shows
-        else if((MainActivity.isMovie && MainActivity.isTV)) {
+        if((MainActivity.isBoth)) {
             title.setText(R.string.sort_movies_and_tv_shows_text);
+        } //Sets dialog name to tv shows
+        else if(MainActivity.isTV) {
+            title.setText(R.string.sort_tv_shows_text);
         }
 
         //Sets type of sort in main activity for api call

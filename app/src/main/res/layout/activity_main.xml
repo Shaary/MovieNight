@@ -28,7 +28,6 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@id/toolbar">
-
             </view>
 
             <ProgressBar
@@ -41,8 +40,6 @@
 
         </RelativeLayout>
 
-
-
         <android.support.design.widget.NavigationView
             android:id="@+id/navigation_view"
             android:layout_width="wrap_content"
@@ -53,8 +50,6 @@
             app:headerLayout="@layout/navigation_header">
 
         </android.support.design.widget.NavigationView>
-
-
 
     </android.support.v4.widget.DrawerLayout>
 </layout>

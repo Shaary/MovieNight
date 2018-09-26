@@ -15,44 +15,35 @@ import android.widget.TextView;
 
 import com.shaary.movienight.R;
 
+import java.util.Locale;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+//This fragment takes bundle of args when the recyclerview is clicked at set them to it's view
 public class ChoiceDialogFragment extends DialogFragment {
 
     public static final String TAG = ChoiceDialogFragment.class.getSimpleName();
 
-    private TextView summary;
-    private Button ok;
-    private RatingBar ratingBar;
-    private TextView title;
-    private TextView numOfVotes;
-
-
+    @BindView(R.id.summary_text) TextView summary;
+    @BindView(R.id.choice_ok_button) Button okButton;
+    @BindView(R.id.choice_ratingBar) RatingBar ratingBar;
+    @BindView(R.id.title) TextView title;
+    @BindView(R.id.num_of_votes) TextView numOfVotes;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.choice_dialog_fragment, container, false);
-
-        summary = view.findViewById(R.id.summary_text);
-        ok = view.findViewById(R.id.choice_ok_button);
-        ratingBar = view.findViewById(R.id.choice_ratingBar);
-        title = view.findViewById(R.id.title);
-        numOfVotes = view.findViewById(R.id.num_of_votes);
-
+        ButterKnife.bind(this, view);
         summary.setMovementMethod(new ScrollingMovementMethod());
 
-        numOfVotes.setText("(Voted: " + getArguments().getInt("vote count") + ")");
+        numOfVotes.setText(String.format(Locale.getDefault(), "(Voted: %d)", getArguments().getInt("vote count")));
         ratingBar.setRating(getArguments().getFloat("rating"));
         summary.setText(getArguments().getString("overview"));
         title.setText(getArguments().getString("title"));
-        Log.d(TAG, "onCreateView: lol" + getArguments().getFloat("rating"));
 
-        ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDialog().dismiss();
-            }
-        });
-
+        okButton.setOnClickListener(v -> getDialog().dismiss());
 
         return view;
     }

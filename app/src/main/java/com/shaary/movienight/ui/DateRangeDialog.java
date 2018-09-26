@@ -18,114 +18,84 @@ import com.shaary.movienight.R;
 
 import java.util.Calendar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class DateRangeDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener{
 
     public static final String TAG = DateRangeDialog.class.getSimpleName();
 
-    private Button okButton;
-    private Button dismissButton;
-    private Button clearAllButton;
-    private TextView from;
-    private TextView to;
-    private DatePickerDialog.OnDateSetListener mOnBeginDateSetListener;
-    private DatePickerDialog.OnDateSetListener mOnEndDateSetListener;
-
+    @BindView(R.id.date_ok_button) Button okButton;
+    @BindView(R.id.date_dismiss_button) Button dismissButton;
+    @BindView(R.id.date_clear_all_button) Button clearAllButton;
+    @BindView(R.id.date_begin) TextView beginningDate;
+    @BindView(R.id.date_end) TextView endDate;
+    private DatePickerDialog.OnDateSetListener onBeginDateSetListener;
+    private DatePickerDialog.OnDateSetListener onEndDateSetListener;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.date_range_dialog, container, false);
+        ButterKnife.bind(this, view);
 
-        okButton = view.findViewById(R.id.date_ok_button);
-        dismissButton = view.findViewById(R.id.date_dismiss_button);
-        clearAllButton = view.findViewById(R.id.date_clear_all_button);
-        from = view.findViewById(R.id.date_begin);
-        to = view.findViewById(R.id.date_end);
+        beginningDate.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+          int year = calendar.get(Calendar.YEAR);
+          int month = calendar.get(Calendar.MONTH);
+          int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        from.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-              int year = calendar.get(Calendar.YEAR);
-              int month = calendar.get(Calendar.MONTH);
-              int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-              DatePickerDialog dialog = new DatePickerDialog(getActivity(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mOnBeginDateSetListener, year, month, day);
-              dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-              dialog.show();
-
-            }
+          //Sets date choosing dialog
+          DatePickerDialog dialog = new DatePickerDialog(getActivity(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, onBeginDateSetListener, year, month, day);
+          dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+          dialog.show();
         });
 
-        mOnBeginDateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String beginDate = year + "-" + "0" +  month + "-" + dayOfMonth;
-                Log.d(TAG, "onDateSet: lol" + beginDate);
-                from.setText(beginDate);
-                ((MainActivity)getActivity()).releaseDateBegin = beginDate;
-            }
+        onBeginDateSetListener = (view12, year, month, dayOfMonth) -> {
+            String beginDate = year + "-" + "0" +  month + "-" + dayOfMonth;
+            Log.d(TAG, "onDateSet: lol" + beginDate);
+            beginningDate.setText(beginDate);
+            MainActivity.releaseDateBegin = beginDate;
         };
 
-        to.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
+        endDate.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog dialog = new DatePickerDialog(getActivity(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mOnEndDateSetListener, year, month, day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.show();
-            }
+            DatePickerDialog dialog = new DatePickerDialog(getActivity(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, onEndDateSetListener, year, month, day);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.show();
         });
 
-        mOnEndDateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String endDate = year + "-" + "0" +  month + "-" + dayOfMonth;
-                Log.d(TAG, "onDateSet: lol" + endDate);
-                to.setText(endDate);
-                ((MainActivity)getActivity()).releaseDateEnd = endDate;
-            }
+        onEndDateSetListener = (view1, year, month, dayOfMonth) -> {
+            String endDate = year + "-" + "0" +  month + "-" + dayOfMonth;
+            Log.d(TAG, "onDateSet: lol" + endDate);
+            this.endDate.setText(endDate);
+            MainActivity.releaseDateEnd = endDate;
         };
 
+        dismissButton.setOnClickListener(v -> getDialog().dismiss());
 
-        dismissButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDialog().dismiss();
-            }
+        clearAllButton.setOnClickListener(v -> {
+            MainActivity.releaseDateEnd = null;
+            MainActivity.releaseDateBegin = null;
+            ((MainActivity)getActivity()).resetPage();
+            ((MainActivity)getActivity()).getDataResultsWithInit();
+            getDialog().dismiss();
         });
 
-        clearAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).releaseDateEnd = null;
-                ((MainActivity)getActivity()).releaseDateBegin = null;
-                ((MainActivity)getActivity()).resetPage();
-                ((MainActivity)getActivity()).getDataResultsWithInit();
-                getDialog().dismiss();
-            }
+        okButton.setOnClickListener(v -> {
+            ((MainActivity)getActivity()).resetPage();
+            ((MainActivity)getActivity()).getDataResultsWithInit();
+            getDialog().dismiss();
         });
-
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                ((MainActivity)getActivity()).releaseDateBegin = minNumVote;
-//                ((MainActivity)getActivity()).releaseDateEnd = minNumVote;
-                ((MainActivity)getActivity()).resetPage();
-                ((MainActivity)getActivity()).getDataResultsWithInit();
-                getDialog().dismiss();
-            }
-        });
-
         return view;
     }
 
-    //have to implement it otherwise the class gives an error
+    //have endDate implement it otherwise the class gives an error
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 

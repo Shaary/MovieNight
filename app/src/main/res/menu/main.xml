@@ -4,35 +4,36 @@
 
     <item
         android:id="@+id/tmdb_icon"
-        android:title="tmdb"
+        android:title="@string/tmdb_text"
         android:icon="@drawable/tmdb1"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:onClick="openTMDB"/>
 
     <item
         android:id="@+id/genre_test"
-        android:title="Genre selection"/>
+        android:title="@string/genre_selection_text"/>
 
     <item
         android:id="@+id/vote_average"
-        android:title="Rating"/>
+        android:title="@string/rating_text"/>
 
     <item
         android:id="@+id/min_num_rating"
-        android:title="Minimum number of votes"/>
+        android:title="@string/minimum_number_of_votes_text"/>
 
     <item
         android:id="@+id/release_range"
-        android:title="Release date range"/>
+        android:title="@string/release_date_range_text"/>
 
     <item
         android:id="@+id/clear_everything"
-        android:title="Clear choices"
-        android:icon="@drawable/baseline_clear_all_black_48"
+        android:title="@string/clear_choices_text"
+        android:icon="@drawable/ic_refresh_black_24dp"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/sort"
-        android:title="Sort"
+        android:title="@string/sort_text"
         app:showAsAction="always"
         android:icon="@drawable/baseline_filter_list_black_48"
         />

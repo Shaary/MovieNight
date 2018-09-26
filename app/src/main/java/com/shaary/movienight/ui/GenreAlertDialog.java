@@ -34,7 +34,6 @@ public class GenreAlertDialog extends DialogFragment {
         } else if (isTV || isBoth) {
             listItems = getResources().getStringArray(R.array.tv_show_genres);
         }
-
         checkedItems = new boolean[listItems.length];
 
         Context context = getActivity();

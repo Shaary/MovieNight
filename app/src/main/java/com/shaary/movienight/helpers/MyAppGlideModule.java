@@ -1,4 +1,4 @@
-package com.shaary.movienight.ui;
+package com.shaary.movienight.helpers;
 
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;

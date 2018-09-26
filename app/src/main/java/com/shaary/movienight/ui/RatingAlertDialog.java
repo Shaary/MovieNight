@@ -12,40 +12,32 @@ import android.widget.TextView;
 
 import com.shaary.movienight.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class RatingAlertDialog extends DialogFragment {
 
-//    public interface OnInputListener{
-//        void sendInput(String input);
-//    }
-
     public static final String TAG = RatingAlertDialog.class.getSimpleName();
-    //public OnInputListener onInputListener;
 
-    private Button okButton;
-    private Button dismissButton;
-    private Button clearAllButton;
-    private SeekBar seekBar;
+   @BindView(R.id.ok_button) Button okButton;
+   @BindView(R.id.dismiss_button) Button dismissButton;
+   @BindView(R.id.claer_all_button) Button clearAllButton;
+   @BindView(R.id.seekBar) SeekBar seekBar;
+   @BindView(R.id.vote_value) TextView valueText;
     private float chosenRating;
-    private TextView valueText;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.rating_alert_dialog, container, false);
+        ButterKnife.bind(this, view);
 
-        okButton = view.findViewById(R.id.ok_button);
-        dismissButton = view.findViewById(R.id.dismiss_button);
-        clearAllButton = view.findViewById(R.id.claer_all_button);
-        valueText = view.findViewById(R.id.vote_value);
-
-        seekBar = view.findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 chosenRating = (float)(progress / 10.0);
-                valueText.setText(chosenRating + "");
-
+                valueText.setText(String.valueOf(chosenRating));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -53,45 +45,21 @@ public class RatingAlertDialog extends DialogFragment {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        dismissButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDialog().dismiss();
-            }
+        dismissButton.setOnClickListener(v -> getDialog().dismiss());
+
+        clearAllButton.setOnClickListener(v -> {
+            MainActivity.voteAverage = 0;
+            ((MainActivity)getActivity()).resetPage();
+            ((MainActivity)getActivity()).getDataResultsWithInit();
+            getDialog().dismiss();
         });
 
-        clearAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).voteAverage = 0;
-                ((MainActivity)getActivity()).resetPage();
-                ((MainActivity)getActivity()).getDataResultsWithInit();
-                getDialog().dismiss();
-            }
+        okButton.setOnClickListener(v -> {
+            MainActivity.voteAverage = chosenRating;
+            ((MainActivity)getActivity()).resetPage();
+            ((MainActivity)getActivity()).getDataResultsWithInit();
+            getDialog().dismiss();
         });
-
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).voteAverage = chosenRating;
-                ((MainActivity)getActivity()).resetPage();
-                ((MainActivity)getActivity()).getDataResultsWithInit();
-                getDialog().dismiss();
-            }
-        });
-
-
         return view;
     }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        try {
-//            onInputListener = (OnInputListener) getActivity();
-//
-//        } catch (ClassCastException cce) {
-//            Log.e(TAG, "onAttach: ClassCastException" + cce.getMessage());
-//        }
-//    }
 }

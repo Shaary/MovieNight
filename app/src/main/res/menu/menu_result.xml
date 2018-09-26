@@ -4,27 +4,16 @@
 
     <item
         android:id="@+id/movies"
-        android:title="MOVIES"
+        android:title="@string/movies_menu"
         android:icon="@mipmap/baseline_local_movies_black_48"/>
 
     <item
         android:id="@+id/tv"
-        android:title="TV SHOWS"
+        android:title="@string/tv_shows_menu"
         android:icon="@mipmap/baseline_tv_black_48"/>
 
     <item
         android:id="@+id/movie_and_tv"
-        android:title="MOVIES AND TV SHOWS"
-        android:icon="@drawable/ic_video_library_black_24dp"
-        />
-
-
-
-
-
-
-
-
-
-
+        android:title="@string/movies_and_tv_shows_menu"
+        android:icon="@drawable/ic_video_library_black_24dp"/>
 </menu>
