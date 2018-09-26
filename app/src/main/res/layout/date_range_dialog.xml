@@ -8,31 +8,27 @@
 
     <TextView
         android:id="@+id/select_date_text"
-        android:layout_width="match_parent"
+        style="@style/MovieNightTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Select a movie date range"
-        android:textAlignment="center"
-        android:textColor="@color/movie_night_text"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:text="@string/select_date_text" />
 
     <LinearLayout
         android:id="@+id/date_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/select_date_text"
-        android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:weightSum="2"
-        >
+        android:padding="10dp" >
 
         <TextView
             android:id="@+id/date_begin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="From: "
+            android:hint="@string/date_begin"
+            android:textAlignment="center"
             android:textSize="18sp" />
 
         <TextView
@@ -40,7 +36,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="To:"
+            android:hint="@string/date_end"
+            android:textAlignment="center"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -57,21 +54,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="OK" />
+            android:text="@string/ok_button_text"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
 
         <Button
             android:id="@+id/date_clear_all_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="CLEAR ALL" />
+            android:text="@string/clear_all_button_text"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
 
         <Button
             android:id="@+id/date_dismiss_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="DISMISS" />
+            android:text="@string/dismiss_button_text"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
     </LinearLayout>
 
 </RelativeLayout>

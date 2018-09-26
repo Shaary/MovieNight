@@ -9,6 +9,29 @@
     <string name="ok_label">OK</string>
     <string name="dismiss_label">Dismiss</string>
     <string name="clear_all_label">Clear all</string>
+    <string name="genre_dialog_title">Choose your genre</string>
+    <string name="select_date_text">Select a movie date range</string>
+    <string name="date_begin">From:</string>
+    <string name="date_end">To:</string>
+    <string name="ok_button_text">OK</string>
+    <string name="clear_all_button_text">CLEAR ALL</string>
+    <string name="dismiss_button_text">DISMISS</string>
+    <string name="choose_a_minimum_number_of_votes_title">Choose a minimum number of votes</string>
+    <string name="by_popularity_text">BY POPULARITY</string>
+    <string name="by_release_date_text">BY RELEASE DATE</string>
+    <string name="by_rating_text">BY RATING</string>
+    <string name="ascending_order_text">ASCENDING ORDER</string>
+    <string name="descending_order_text">DESCENDING ORDER</string>
+    <string name="by_revenue_text">BY REVENUE</string>
+    <string name="by_number_of_votes_text">BY NUMBER OF VOTES</string>
+    <string name="sort_tv_shows_text">SORT TV SHOWS</string>
+    <string name="sort_movies_text">SORT MOVIES</string>
+    <string name="sort_movies_and_tv_shows_text">SORT MOVIES AND TV SHOWS</string>
+    <string name="toast_no_match_found_text">There\'s no match found to your search request</string>
+    <string name="toast_something_went_wrong_text">Something went wrong :( Check your internet connection</string>
+    <string name="toast_movies_are_selected">movies are selected</string>
+    <string name="toast_tv_shows_are_selected">tv shows are selected</string>
+    <string name="toast_mov_and_tv_are_selected">movies and tv shows are selected</string>
 
 
     <string-array name="movie_genres">

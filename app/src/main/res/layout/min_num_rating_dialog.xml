@@ -5,25 +5,18 @@
     android:background="@drawable/bg_gradieint">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/min_num_rating_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="24dp"
-        android:text="Choose a minimum number of votes"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textColor="@color/movie_night_text"
-        android:textSize="16sp" />
+        android:text="@string/choose_a_minimum_number_of_votes_title"
+        style="@style/MovieNightTitle"/>
 
     <Spinner
         android:id="@+id/number_of_ratings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/min_num_rating_text_view"
         android:layout_marginTop="10dp"/>
 
 
@@ -40,20 +33,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="OK" />
+            android:text="@string/ok_button_text"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
 
         <Button
             android:id="@+id/num_rating_clear_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="CLEAR ALL" />
+            android:text="@string/clear_all_button_text"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
 
         <Button
             android:id="@+id/num_rating_dismiss"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="DISMISS" />
+            android:text="@string/dismiss_button_text"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
     </LinearLayout>
 </RelativeLayout>

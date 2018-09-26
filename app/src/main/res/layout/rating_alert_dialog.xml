@@ -9,12 +9,8 @@
         android:id="@+id/rating_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Choose the movie rating"
-        android:textAlignment="center"
-        android:textColor="@color/movie_night_text"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        style="@style/MovieNightTitle"/>
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -46,20 +42,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="OK" />
+            android:text="OK"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
 
         <Button
             android:id="@+id/claer_all_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="CLEAR ALL" />
+            android:text="CLEAR ALL"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
 
         <Button
             android:id="@+id/dismiss_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="DISMISS" />
+            android:text="DISMISS"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black"/>
     </LinearLayout>
 </LinearLayout>

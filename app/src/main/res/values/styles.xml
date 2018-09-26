@@ -25,4 +25,14 @@
         <item name="android:textColor">@color/movie_night_text</item>
     </style>
 
+    <style name="MovieNightTitle">
+        <item name="android:textColor">@color/star</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
