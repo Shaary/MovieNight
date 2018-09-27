@@ -26,7 +26,7 @@ public class MinNumRatingDialog extends DialogFragment{
    @BindView(R.id.num_rating_ok_button) Button okButton;
    @BindView(R.id.num_rating_dismiss) Button dismissButton;
    @BindView(R.id.num_rating_clear_all) Button clearAllButton;
-    private int minNumVote;
+   private int minNumVote;
 
     @Nullable
     @Override
@@ -39,6 +39,12 @@ public class MinNumRatingDialog extends DialogFragment{
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
+
+        //Sets spinner to previously chosen value
+        if (MainActivity.voteCount != 0) {
+            int spinnerPosition = adapter.getPosition(String.valueOf(MainActivity.voteCount));
+            spinner.setSelection(spinnerPosition);
+        }
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -61,9 +67,11 @@ public class MinNumRatingDialog extends DialogFragment{
         });
 
         okButton.setOnClickListener(v -> {
-            MainActivity.voteCount = minNumVote;
-            ((MainActivity)getActivity()).resetPage();
-            ((MainActivity)getActivity()).getDataResultsWithInit();
+            if (MainActivity.voteCount != minNumVote) {
+                MainActivity.voteCount = minNumVote;
+                ((MainActivity) getActivity()).resetPage();
+                ((MainActivity) getActivity()).getDataResultsWithInit();
+            }
             getDialog().dismiss();
         });
         return view;

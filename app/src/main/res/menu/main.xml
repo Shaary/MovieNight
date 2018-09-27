@@ -19,6 +19,7 @@
 
     <item
         android:id="@+id/min_num_rating"
+        android:checkable="true"
         android:title="@string/minimum_number_of_votes_text"/>
 
     <item
@@ -28,7 +29,7 @@
     <item
         android:id="@+id/clear_everything"
         android:title="@string/clear_choices_text"
-        android:icon="@drawable/ic_refresh_black_24dp"
+        android:icon="@drawable/ic_cancel_black_24dp"
         app:showAsAction="always"/>
 
     <item

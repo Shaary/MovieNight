@@ -62,7 +62,6 @@
                     />
                 <Button
                     android:id="@+id/choice_ok_button"
-                    style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -70,7 +69,8 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:text="@string/ok_button_text"
-                    />
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textColor="@android:color/black"/>
 
             </LinearLayout>
         </ScrollView>

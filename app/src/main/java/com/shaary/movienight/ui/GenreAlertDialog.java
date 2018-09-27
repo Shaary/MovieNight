@@ -20,63 +20,67 @@ import static com.shaary.movienight.ui.MainActivity.isTV;
 
 public class GenreAlertDialog extends DialogFragment {
 
-    String[] listItems;
-    boolean[] checkedItems;
-    ArrayList<Integer> mUserItems = new ArrayList<>();
-    ArrayList<String> items = new ArrayList<>();
+    String[] listOgGenres;
+    boolean[] ifGenresChecked;
+    ArrayList<Integer> chosenGenres = new ArrayList<>();
+    ArrayList<String> genres = new ArrayList<>();
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         //Genres for movies and tv shows are different
         if (isMovie) {
-            listItems = getResources().getStringArray(R.array.movie_genres);
+            listOgGenres = getResources().getStringArray(R.array.movie_genres);
         } else if (isTV || isBoth) {
-            listItems = getResources().getStringArray(R.array.tv_show_genres);
+            listOgGenres = getResources().getStringArray(R.array.tv_show_genres);
         }
-        checkedItems = new boolean[listItems.length];
+        ifGenresChecked = new boolean[listOgGenres.length];
 
         Context context = getActivity();
 
         //Sets up the dialog window
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogCustom)
                 .setTitle(R.string.genre_dialog_title)
-                .setMultiChoiceItems(listItems, checkedItems, (dialogInterface, position, isChecked) -> {
+                .setMultiChoiceItems(listOgGenres, ifGenresChecked, (dialogInterface, position, isChecked) -> {
                     if(isChecked){
-                        mUserItems.add(position);
+                        chosenGenres.add(position);
                     }else{
-                        mUserItems.remove((Integer.valueOf(position)));
+                        chosenGenres.remove((Integer.valueOf(position)));
                     }
                 });
-
-        builder.setPositiveButton(R.string.ok_label, (dialogInterface, which) -> {
-            for (int i = 0; i < mUserItems.size(); i++) {
-                items.add(listItems[mUserItems.get(i)]);
-                Log.d(TAG, "onClick: " + items);
-            }
-            getGenres();
-            ((MainActivity)getActivity()).resetPage();
-            ((MainActivity)getActivity()).getDataResultsWithInit();
-        });
 
         builder.setNegativeButton(R.string.dismiss_label, (dialogInterface, i) -> dialogInterface.dismiss());
 
         builder.setNeutralButton(R.string.clear_all_label, (dialogInterface, which) -> {
-            for (int i = 0; i < checkedItems.length; i++) {
-                checkedItems[i] = false;
-                mUserItems.clear();
+            for (int i = 0; i < ifGenresChecked.length; i++) {
+                ifGenresChecked[i] = false;
+                chosenGenres.clear();
             }
             genreId = null;
             ((MainActivity)getActivity()).resetPage();
             ((MainActivity)getActivity()).getDataResultsWithInit();
         });
 
+        builder.setPositiveButton(R.string.ok_label, (dialogInterface, which) -> {
+            for (int i = 0; i < chosenGenres.size(); i++) {
+                genres.add(listOgGenres[chosenGenres.get(i)]);
+                Log.d(TAG, "onClick: " + genres);
+            }
+            String genresIds = getGenres();
+            if (genres.size() != 0) {
+                genreId = genresIds;
+                ((MainActivity) getActivity()).resetPage();
+                ((MainActivity) getActivity()).getDataResultsWithInit();
+            }
+            dismiss();
+        });
+
         return builder.create();
     }
 
     //requests genre's ids from Genre class and sets genreId in MainActivity
-    public void getGenres() {
+    public String getGenres() {
         Genres genres = new Genres();
-        genreId = genres.getId(items);
+        return genres.getId(this.genres);
     }
 }

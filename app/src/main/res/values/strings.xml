@@ -47,6 +47,9 @@
     <string name="toast_something_went_wrong_text">Something went wrong :( Check your internet connection</string>
     <string name="toast_tv_shows_are_selected">tv shows are selected</string>
     <string name="tv_shows_menu">TV SHOWS</string>
+    <string name="moview_and_tvs_toolbar">Movies and TVs</string>
+    <string name="tv_shows_toolbar">TV Shows</string>
+    <string name="movies_toolbar">Movies</string>
 
 
     <string-array name="movie_genres">

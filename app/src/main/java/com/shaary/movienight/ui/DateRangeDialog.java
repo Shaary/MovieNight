@@ -30,15 +30,23 @@ public class DateRangeDialog extends DialogFragment implements DatePickerDialog.
     @BindView(R.id.date_dismiss_button) Button dismissButton;
     @BindView(R.id.date_clear_all_button) Button clearAllButton;
     @BindView(R.id.date_begin) TextView beginningDate;
-    @BindView(R.id.date_end) TextView endDate;
+    @BindView(R.id.date_end) TextView endingDate;
     private DatePickerDialog.OnDateSetListener onBeginDateSetListener;
     private DatePickerDialog.OnDateSetListener onEndDateSetListener;
+    private String beginDate;
+    private String endDate;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.date_range_dialog, container, false);
         ButterKnife.bind(this, view);
+
+        //Sets dates to previously chosen by user
+        if (MainActivity.releaseDateBegin != null && MainActivity.releaseDateEnd != null) {
+            beginningDate.setText(MainActivity.releaseDateBegin);
+            endingDate.setText(MainActivity.releaseDateEnd);
+        }
 
         beginningDate.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
@@ -53,13 +61,13 @@ public class DateRangeDialog extends DialogFragment implements DatePickerDialog.
         });
 
         onBeginDateSetListener = (view12, year, month, dayOfMonth) -> {
-            String beginDate = year + "-" + "0" +  month + "-" + dayOfMonth;
+            beginDate = year + "-" + "0" +  month + "-" + dayOfMonth;
             Log.d(TAG, "onDateSet: lol" + beginDate);
             beginningDate.setText(beginDate);
             MainActivity.releaseDateBegin = beginDate;
         };
 
-        endDate.setOnClickListener(v -> {
+        endingDate.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
@@ -71,9 +79,9 @@ public class DateRangeDialog extends DialogFragment implements DatePickerDialog.
         });
 
         onEndDateSetListener = (view1, year, month, dayOfMonth) -> {
-            String endDate = year + "-" + "0" +  month + "-" + dayOfMonth;
+            endDate = year + "-" + "0" +  month + "-" + dayOfMonth;
             Log.d(TAG, "onDateSet: lol" + endDate);
-            this.endDate.setText(endDate);
+            this.endingDate.setText(endDate);
             MainActivity.releaseDateEnd = endDate;
         };
 
@@ -88,8 +96,10 @@ public class DateRangeDialog extends DialogFragment implements DatePickerDialog.
         });
 
         okButton.setOnClickListener(v -> {
-            ((MainActivity)getActivity()).resetPage();
-            ((MainActivity)getActivity()).getDataResultsWithInit();
+            if (beginningDate != null || endDate != null) {
+                ((MainActivity) getActivity()).resetPage();
+                ((MainActivity) getActivity()).getDataResultsWithInit();
+            }
             getDialog().dismiss();
         });
         return view;

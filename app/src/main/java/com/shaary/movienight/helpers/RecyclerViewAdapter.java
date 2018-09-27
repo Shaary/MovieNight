@@ -40,19 +40,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private List<String> types;
     private Context context;
     private Listener listener;
-    private List<Result> listOfData;
+
 
     public interface Listener {
         void onClick(int position);
     }
 
-    public RecyclerViewAdapter(Context context, List<String> posters, List<String> titles, List<String> releaseDates, List<String> types, List<Result> listOfData) {
+    public RecyclerViewAdapter(Context context, List<String> posters, List<String> titles, List<String> releaseDates, List<String> types) {
         this.context = context;
         this.posters = posters;
         this.titles = titles;
         this.releaseDates = releaseDates;
         this.types = types;
-        this.listOfData = listOfData;
+
     }
 
     @NonNull
@@ -69,8 +69,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         RequestListener<Bitmap> requestListener = new RequestListener<Bitmap>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                // todo log exception to central service or something like that
-
+                Log.d(TAG, "onLoadFailed: " + e);
                 // important to return false so the error placeholder can be placed
                 return false;
             }
@@ -91,7 +90,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         //Log.d(TAG, "onBindViewHolder: poster " + posters.get(position));
 
-        if(types.get(position) == "Movie") {
+        if(types.get(position).equals("Movie")) {
             holder.parentLayout.setBackgroundColor(Color.parseColor("#1e90ff"));
         } else {
             holder.parentLayout.setBackgroundColor(Color.parseColor("#afeeee"));
@@ -99,19 +98,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.imageName.setText(titles.get(position));
         holder.releaseDate.setText(String.format("(%s)", releaseDates.get(position)));
-        holder.image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onClick(position);
-                }
+        holder.image.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onClick(position);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return listOfData.size();
+        return titles.size();
     }
 
     public void setListener(Listener listener){
@@ -133,12 +129,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    public void addResults(List<String> posters, List<String> titles, List<String> releaseDates, List<String> types, List<Result> listOfData) {
+    public void addResults(List<String> posters, List<String> titles, List<String> releaseDates, List<String> types) {
         this.posters.addAll(posters);
         this.titles.addAll(titles);
         this.releaseDates.addAll(releaseDates);
         this.types.addAll(types);
-        this.listOfData.addAll(listOfData);
         notifyDataSetChanged();
 
     }

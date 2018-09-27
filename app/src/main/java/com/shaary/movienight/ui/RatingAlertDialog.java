@@ -25,13 +25,21 @@ public class RatingAlertDialog extends DialogFragment {
    @BindView(R.id.claer_all_button) Button clearAllButton;
    @BindView(R.id.seekBar) SeekBar seekBar;
    @BindView(R.id.vote_value) TextView valueText;
-    private float chosenRating;
+   private float chosenRating;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.rating_alert_dialog, container, false);
         ButterKnife.bind(this, view);
+
+
+        //Sets the progress bar and text to previously chosen values
+        if (MainActivity.voteAverage != 0) {
+            int progress = (int) MainActivity.voteAverage * 10;
+            seekBar.setProgress(progress);
+            valueText.setText(String.valueOf(MainActivity.voteAverage));
+        }
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -55,9 +63,11 @@ public class RatingAlertDialog extends DialogFragment {
         });
 
         okButton.setOnClickListener(v -> {
-            MainActivity.voteAverage = chosenRating;
-            ((MainActivity)getActivity()).resetPage();
-            ((MainActivity)getActivity()).getDataResultsWithInit();
+            if (MainActivity.voteAverage != chosenRating) {
+                MainActivity.voteAverage = chosenRating;
+                ((MainActivity) getActivity()).resetPage();
+                ((MainActivity) getActivity()).getDataResultsWithInit();
+            }
             getDialog().dismiss();
         });
         return view;

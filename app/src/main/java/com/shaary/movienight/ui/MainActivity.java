@@ -39,10 +39,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    //TODO: check in all fragments if OK is clicked without choosing something. And if it is just dismiss the window
-    //TODO: Checked options should remain visible when open the dialog again
-    
-
     private static final String TAG = MainActivity.class.getSimpleName();
 
     //Request constants
@@ -60,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static String genreId = null;
     public static String releaseDateBegin = null;
     public static String releaseDateEnd = null;
-    public static String SORT_BY = "popularity.desc";
+    public static String sortByType = "popularity";
+    public static String sortByOrder = ".desc";
     public static String resultPosterPath;
 
     //Flags
@@ -86,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //TODO: fix the icon
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -157,13 +157,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Call<DataResults> call;
 
         if (isMovie) {
-            call = myInterface.getListOfMovies(API_KEY, LANGUAGE, SORT_BY, PAGE,
+            call = myInterface.getListOfMovies(API_KEY, LANGUAGE, sortByType+sortByOrder, PAGE,
                     voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
         } else {
-            call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, SORT_BY, PAGE,
+            call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, sortByType+sortByOrder, PAGE,
                     voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
         }
 
+        Log.d(TAG, "getDataResultsWithInit: sortByType " + sortByType);
         call.enqueue(new Callback<DataResults>() {
             @Override
             public void onResponse(@NonNull Call<DataResults> call, @NonNull Response<DataResults> response) {
@@ -201,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     } else {
                         newListOfData = results.getResults();
                         setPostersPath(newListOfData);
+                        listOfData.addAll(newListOfData);
 
                         //Creates new lists with info endDate update recyclerview
                         ArrayList<String> newTitles = new ArrayList<>();
@@ -220,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                         }
                         //Update recyclerview
-                        recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), newTitles, newReleaseDates, newTypes, newListOfData));
+                        recyclerView.post(() -> recyclerViewAdapter.addResults(getListOfPosters(newListOfData), newTitles, newReleaseDates, newTypes));
                     }
                 } else {
                     showErrors(response.code());
@@ -265,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initRecyclerView(List<Result> listOfData, ArrayList<String> titles, ArrayList<String> releaseDates, ArrayList<String> types) {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
-        recyclerViewAdapter = new RecyclerViewAdapter(this, getListOfPosters(listOfData), titles, releaseDates, types, listOfData);
+        recyclerViewAdapter = new RecyclerViewAdapter(this, getListOfPosters(listOfData), titles, releaseDates, types);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerViewAdapter.notifyDataSetChanged();
 
@@ -333,21 +335,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 genreId = null;
                 releaseDateBegin = null;
                 releaseDateEnd = null;
-                SORT_BY = "popularity.desc";
+                sortByType = "popularity";
+                sortByOrder = ".desc";
                 getDataResultsWithInit();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO: implements methods that will sort. Figure out DiffUtil
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         switch (id) {
             case R.id.movies:
-                getSupportActionBar().setTitle(R.string.movies_menu);
+                getSupportActionBar().setTitle(R.string.movies_toolbar);
                 isMovie = true;
                 isTV = false;
                 isBoth = false;
@@ -357,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
 
             case R.id.tv:
-                getSupportActionBar().setTitle(R.string.tv_shows_menu);
+                getSupportActionBar().setTitle(R.string.tv_shows_toolbar);
                 isMovie = false;
                 isTV = true;
                 isBoth = false;
@@ -367,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
 
             case R.id.movie_and_tv:
-                getSupportActionBar().setTitle(R.string.movies_and_tv_shows_menu);
+                getSupportActionBar().setTitle(R.string.moview_and_tvs_toolbar);
                 resetPage();
                 isBoth = true;
                 isMovie = false;
@@ -377,6 +379,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        menu.getItem(3).setChecked(true);
+        return true;
     }
 
     public void resetPage() {
@@ -403,6 +412,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    //Makes TMDB icon send user to it's website
     public void openTMDB(MenuItem item) {
         Intent intent = new Intent("android.intent.action.VIEW", Uri.parse(getString(R.string.tmdb_url)));
         startActivity(intent);
