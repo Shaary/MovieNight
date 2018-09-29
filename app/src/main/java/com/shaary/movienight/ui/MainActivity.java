@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (isLastItemDisplaying(recyclerView)) {
-                    PAGE++;
                     Log.d(TAG, "onScrolled: canDownload " + canLoad);
                     //If it's set to download both movie and tv then this method loads first tv then movie and so on
                     if (isBoth) {
@@ -122,14 +121,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             isTV = false;
                             canLoad = true;
                             getDataResultsWithInit();
+                            PAGE++;
                         } else {
                             isMovie = false;
                             isTV = true;
                             getDataResultsWithInit();
                             //Sets canLoad to false so it won't download several pages at a time
                             canLoad = false;
+                            PAGE++;
                         }
                     } else {
+                        PAGE++;
                         getDataResultsWithInit();
                     }
                 }
@@ -173,7 +175,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (response.isSuccessful()) {
                     DataResults results = response.body();
                     if (results.getResults().size() == 0){
-                        Toast.makeText(MainActivity.this, R.string.toast_no_match_found_text, Toast.LENGTH_SHORT).show();
+                        if (isBoth) {
+                            //When sorted by several parameters list of tv shows is usually shorter than list of movies
+                            //Checks if there's no more results for one of the types and then shows only one (movies or tvs)
+                            if(isTV) {
+                                Toast.makeText(MainActivity.this, R.string.toast_no_match_found_for_tv_show, Toast.LENGTH_SHORT).show();
+                                isBoth = false;
+                                isTV = false;
+                                isMovie = true;
+                                getDataResultsWithInit();
+                            } else {
+                                Toast.makeText(MainActivity.this, R.string.toast_no_match_found_for_movie, Toast.LENGTH_SHORT).show();
+                                isBoth = false;
+                                isTV = true;
+                                isMovie = false;
+                                getDataResultsWithInit();
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, R.string.toast_no_match_found_text, Toast.LENGTH_SHORT).show();
+                        }
                     }
                     else if (listOfData.isEmpty()){
                         listOfData = results.getResults();

@@ -1,6 +1,5 @@
 package com.shaary.movienight.ui;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -20,7 +19,6 @@ import com.shaary.movienight.model.Genres;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
