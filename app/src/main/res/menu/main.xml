@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <item
         android:id="@+id/tmdb_icon"
@@ -8,6 +9,12 @@
         android:icon="@drawable/tmdb1"
         app:showAsAction="always"
         android:onClick="openTMDB"/>
+
+    <item
+        android:id="@+id/sort"
+        android:title="@string/sort_text"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/baseline_filter_list_black_48" />
 
     <item
         android:id="@+id/genre_test"
@@ -19,7 +26,6 @@
 
     <item
         android:id="@+id/min_num_rating"
-        android:checkable="true"
         android:title="@string/minimum_number_of_votes_text"/>
 
     <item
@@ -31,13 +37,5 @@
         android:title="@string/clear_choices_text"
         android:icon="@drawable/ic_cancel_black_24dp"
         app:showAsAction="always"/>
-
-    <item
-        android:id="@+id/sort"
-        android:title="@string/sort_text"
-        app:showAsAction="always"
-        android:icon="@drawable/baseline_filter_list_black_48"
-        />
-
 
 </menu>

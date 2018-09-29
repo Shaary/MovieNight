@@ -47,7 +47,8 @@
             app:menu="@menu/menu_result"
             android:layout_gravity="start"
             android:fitsSystemWindows="false"
-            app:headerLayout="@layout/navigation_header">
+            app:headerLayout="@layout/navigation_header"
+            android:background="@drawable/bg_gradieint">
 
         </android.support.design.widget.NavigationView>
 

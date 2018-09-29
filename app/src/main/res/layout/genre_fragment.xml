@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.GenreFragment"
+    android:orientation="vertical"
+    android:background="@drawable/bg_gradieint">
+
+    <TextView
+        android:id="@+id/genre_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/genre_dialog_title"
+        style="@style/MovieNightTitle"
+        android:layout_alignParentTop="true"/>
+
+    <ScrollView
+        android:id="@+id/genre_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/genre_title"
+        android:layout_above="@id/genre_linear_layout_buttons">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/genre_linear_layout"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/genre_linear_layout_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/genre_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="OK"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/genre_clear_all_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="CLEAR ALL"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/genre_dismiss_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="DISMISS"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="74dp" />
+
+
+</RelativeLayout>

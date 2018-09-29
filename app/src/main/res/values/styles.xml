@@ -7,15 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
-    <style name="AlertDialogCustom" parent="@android:style/Theme.Dialog">
-        <item name="android:textColor">@color/movie_night_text</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:headerDividersEnabled">true</item>
-        <item name="android:typeface">normal</item>
-        <item name="android:background">@drawable/bg_gradieint</item>
-    </style>
-
+    
     <style name="RatingBar" parent="Theme.AppCompat">
         <item name="colorControlNormal">@color/movie_night_text</item>
         <item name="colorControlActivated">@color/star</item>
@@ -25,6 +17,20 @@
         <item name="android:textColor">@color/movie_night_text</item>
     </style>
 
+    <style name="MovieNightTextMedium">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#000</item>
+    </style>
+    
+    <style name="AlertDialogCustom">
+        <item name="android:windowTitleStyle">@style/MovieNightTitle</item>
+        <item name="android:textAppearanceMedium">@style/MovieNightTextMedium</item>
+        <item name="android:background">@drawable/bg_gradieint</item>
+        <item name="android:borderlessButtonStyle">@style/MovieNightButton</item>
+        <item name="android:buttonBarStyle">@style/MovieNightButtonBar</item>
+    </style>
+    
     <style name="MovieNightTitle">
         <item name="android:textColor">@color/star</item>
         <item name="android:textSize">24sp</item>
@@ -33,6 +39,16 @@
         <item name="android:textAlignment">center</item>
         <item name="android:padding">8dp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="MovieNightButton" parent="@android:style/Widget.Holo.Button.Borderless">
+        <item name="android:textColor">#000</item>
+        <item name="android:textAllCaps">true</item>
+
+    </style>
+    
+    <style name="MovieNightButtonBar" parent="@android:style/Holo.ButtonBar.AlertDialog">
+        <item name="android:background">@drawable/bg_gradieint</item>
     </style>
 
 

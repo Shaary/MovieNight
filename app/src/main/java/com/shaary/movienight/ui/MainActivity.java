@@ -24,7 +24,6 @@ import com.shaary.movienight.helpers.RecyclerViewAdapter;
 import com.shaary.movienight.model.DataResults;
 import com.shaary.movienight.model.children.Result;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,12 +52,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static float voteAverage = 0;
     public static int voteCount = 0;
     public static int year = 0;
-    public static String genreId = null;
+    public static String genre = null;
     public static String releaseDateBegin = null;
     public static String releaseDateEnd = null;
     public static String sortByType = "popularity";
     public static String sortByOrder = ".desc";
     public static String resultPosterPath;
+
+    //Stores data from GenreFragment to check the boxes when it's opened again
+    public static ArrayList<Integer> genreIds = new ArrayList<>();
 
     //Flags
     public static boolean isBoth = false;
@@ -158,10 +160,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (isMovie) {
             call = myInterface.getListOfMovies(API_KEY, LANGUAGE, sortByType+sortByOrder, PAGE,
-                    voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
+                    voteCount, voteAverage, year, genre, releaseDateBegin, releaseDateEnd);
         } else {
             call = myInterface.getListOfTvShows(API_KEY, LANGUAGE, sortByType+sortByOrder, PAGE,
-                    voteCount, voteAverage, year, genreId, releaseDateBegin, releaseDateEnd);
+                    voteCount, voteAverage, year, genre, releaseDateBegin, releaseDateEnd);
         }
 
         Log.d(TAG, "getDataResultsWithInit: sortByType " + sortByType);
@@ -302,9 +304,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Creates a dialog when menu buttons are clicked
         switch (id) {
             case R.id.genre_test:
-                GenreAlertDialog genreAlertDialog = new GenreAlertDialog();
-                genreAlertDialog.show(getFragmentManager(), "genres");
-                Log.d(TAG, "onOptionsItemSelected: " + genreId);
+//                GenreAlertDialog genreAlertDialog = new GenreAlertDialog();
+//                genreAlertDialog.show(getFragmentManager(), "genres");
+                GenreFragment genreFragment = new GenreFragment();
+                genreFragment.show(getSupportFragmentManager(), "genres");
+                Log.d(TAG, "onOptionsItemSelected: " + genre);
                 return true;
             case R.id.vote_average:
                 RatingAlertDialog ratingAlertDialog = new RatingAlertDialog();
@@ -332,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 voteCount = 0;
                 voteAverage = 0;
                 year = 0;
-                genreId = null;
+                genre = null;
                 releaseDateBegin = null;
                 releaseDateEnd = null;
                 sortByType = "popularity";
@@ -379,13 +383,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        menu.getItem(3).setChecked(true);
-        return true;
     }
 
     public void resetPage() {

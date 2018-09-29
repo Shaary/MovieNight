@@ -45,18 +45,16 @@ public class GenreAlertDialog extends DialogFragment {
                     if(isChecked){
                         chosenGenres.add(position);
                     }else{
-                        chosenGenres.remove((Integer.valueOf(position)));
+                        chosenGenres.remove(position);
                     }
                 });
-
-        builder.setNegativeButton(R.string.dismiss_label, (dialogInterface, i) -> dialogInterface.dismiss());
 
         builder.setNeutralButton(R.string.clear_all_label, (dialogInterface, which) -> {
             for (int i = 0; i < ifGenresChecked.length; i++) {
                 ifGenresChecked[i] = false;
                 chosenGenres.clear();
             }
-            genreId = null;
+            genre = null;
             ((MainActivity)getActivity()).resetPage();
             ((MainActivity)getActivity()).getDataResultsWithInit();
         });
@@ -68,17 +66,20 @@ public class GenreAlertDialog extends DialogFragment {
             }
             String genresIds = getGenres();
             if (genres.size() != 0) {
-                genreId = genresIds;
+                genre = genresIds;
                 ((MainActivity) getActivity()).resetPage();
                 ((MainActivity) getActivity()).getDataResultsWithInit();
             }
             dismiss();
         });
 
+
+        builder.setNegativeButton(R.string.dismiss_label, (dialogInterface, i) -> dialogInterface.dismiss());
+
         return builder.create();
     }
 
-    //requests genre's ids from Genre class and sets genreId in MainActivity
+    //requests genre's ids from Genre class and sets genre in MainActivity
     public String getGenres() {
         Genres genres = new Genres();
         return genres.getId(this.genres);

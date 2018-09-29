@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_gradieint"
-        android:id="@+id/choice_relative_layout"
-        android:layout_margin="0dp"
-        android:layout_marginBottom="16dp"
-        android:padding="8dp"
-        >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/choice_relative_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_gradieint"
+    android:padding="8dp">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/choice_lin_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/MovieNightTitle"
-        tools:text="Black Mamba" />
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_above="@id/choice_lin_layout_button">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/MovieNightTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Black Mamba" />
 
         <RatingBar
             android:id="@+id/choice_ratingBar"
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="4dp"
             android:isIndicator="true"
@@ -35,44 +37,48 @@
 
         <TextView
             android:id="@+id/num_of_votes"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/choice_ratingBar"
-            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
             tools:text="1000" />
 
         <ScrollView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/num_of_votes"
             android:fillViewport="true">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/summary_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/summary_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:text="Good Movie"
-                    android:textAlignment="center"
-                    android:textSize="18sp"
-                    />
-                <Button
-                    android:id="@+id/choice_ok_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/ok_button_text"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:textColor="@android:color/black"/>
+                android:textAlignment="center"
+                android:textSize="18sp"
+                tools:text="Good Movie" />
 
-            </LinearLayout>
         </ScrollView>
 
-    </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/choice_lin_layout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        >
+
+        <Button
+            android:id="@+id/choice_ok_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ok_button_text"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

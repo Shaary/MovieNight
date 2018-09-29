@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="140dp"
-    android:background="@color/movie_night">
+    android:background="@drawable/movie_night_blu_sky">
 
     <TextView
         android:id="@+id/filterText"
@@ -13,5 +13,6 @@
         android:layout_marginStart="18dp"
         android:text="Movie Night"
         android:textColor="@color/star"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>
